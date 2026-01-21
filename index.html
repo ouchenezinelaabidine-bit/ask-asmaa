@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>اسأل الأستاذة أسماء | Math Helper</title>
+
+  <!-- Optional: MathJax for LaTeX (if CDN reachable) -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+  <style>
+    :root{
+      --bg1:#070b14;
+      --bg2:#0b1430;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12);
+      --text:#eaf2ff;
+      --muted:#b7c3e6;
+      --shadow: 0 24px 60px rgba(0,0,0,.55);
+      --brand1:#3b82f6;
+      --brand2:#a855f7;
+      --brand3:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --r:18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(59,130,246,.25), transparent 60%),
+        radial-gradient(1000px 650px at 85% 15%, rgba(168,85,247,.22), transparent 60%),
+        radial-gradient(900px 600px at 50% 90%, rgba(34,197,94,.16), transparent 65%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+
+    .shell{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap:16px;
+    }
+
+    @media (max-width: 900px){
+      .shell{ grid-template-columns: 1fr; }
+    }
+
+    .panel, .chat{
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius: calc(var(--r) + 6px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      backdrop-filter: blur(10px);
+    }
+
+    /* left panel */
+    .panelHeader{
+      padding:18px 18px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:
+        radial-gradient(600px 300px at 10% 0%, rgba(59,130,246,.20), transparent 55%),
+        radial-gradient(700px 380px at 90% 0%, rgba(168,85,247,.18), transparent 60%);
+    }
+
+    .brandRow{
+      display:flex; align-items:center; gap:12px;
+    }
+
+    .orb{
+      width:46px;height:46px;border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,0) 40%),
+        conic-gradient(from 200deg, var(--brand1), var(--brand2), #06b6d4, var(--brand3), var(--brand1));
+      box-shadow: 0 0 0 6px rgba(59,130,246,.10), 0 22px 40px rgba(0,0,0,.35);
+      flex:0 0 auto;
+    }
+
+    .title{
+      margin:0;
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:2px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    .panelBody{
+      padding:14px 18px 18px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12.5px;
+      margin-bottom:10px;
+      user-select:none;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: var(--brand3);
+      box-shadow:0 0 0 6px rgba(34,197,94,.10);
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+      border-radius: var(--r);
+      padding:14px;
+      margin-top:12px;
+    }
+
+    .card h3{
+      margin:0 0 8px;
+      font-size:13px;
+      color:#dbe7ff;
+      letter-spacing:.2px;
+    }
+
+    .chips{
+      display:flex; flex-wrap:wrap; gap:8px;
+    }
+    .chip{
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color:#eaf2ff;
+      padding:9px 10px;
+      border-radius: 999px;
+      font-size:12.5px;
+      transition: transform .08s ease, background .15s ease, border .15s ease;
+      user-select:none;
+      max-width:100%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .chip:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .chip:active{ transform: translateY(0); }
+
+    .note{
+      margin-top:14px;
+      font-size:12.5px;
+      color:rgba(234,242,255,.75);
+      line-height:1.7;
+    }
+    .note b{ color:#fff; }
+
+    /* chat */
+    .chatHeader{
+      padding:16px 18px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:
+        linear-gradient(90deg, rgba(59,130,246,.14), rgba(168,85,247,.12));
+    }
+    .chatHeader .left{
+      display:flex; align-items:center; gap:10px;
+      min-width:0;
+    }
+    .tag{
+      font-size:12px;
+      color: rgba(234,242,255,.78);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.15);
+      padding:7px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    .actions{
+      display:flex; gap:8px;
+      align-items:center;
+    }
+    .iconBtn{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color:#fff;
+      border-radius:12px;
+      padding:9px 10px;
+      cursor:pointer;
+      font-size:12.5px;
+      transition: background .15s ease, transform .08s ease;
+    }
+    .iconBtn:hover{ background: rgba(255,255,255,.09); transform: translateY(-1px); }
+    .iconBtn:active{ transform: translateY(0); }
+
+    .chatBody{
+      height: min(640px, 70vh);
+      padding:16px 14px 10px;
+      overflow:auto;
+      scroll-behavior:smooth;
+    }
+
+    .msgRow{
+      display:flex;
+      margin:10px 0;
+      gap:10px;
+    }
+    .msgRow.me{ justify-content:flex-start; } /* RTL start = right */
+    .msgRow.bot{ justify-content:flex-end; }
+
+    .bubble{
+      max-width: 85%;
+      border-radius: 16px;
+      padding:12px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      line-height:1.75;
+      font-size:14px;
+      white-space:pre-wrap;
+      word-break:break-word;
+      box-shadow: 0 10px 25px rgba(0,0,0,.22);
+      position:relative;
+    }
+    .me .bubble{
+      background: linear-gradient(135deg, rgba(59,130,246,.35), rgba(59,130,246,.12));
+      border-color: rgba(59,130,246,.35);
+    }
+    .bot .bubble{
+      background: linear-gradient(135deg, rgba(168,85,247,.20), rgba(0,0,0,.18));
+      border-color: rgba(168,85,247,.25);
+    }
+
+    .meta{
+      font-size:11px;
+      color:rgba(234,242,255,.55);
+      margin-top:6px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .typing{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      color:rgba(234,242,255,.75);
+      font-size:12.5px;
+    }
+    .dots{ display:inline-flex; gap:4px; }
+    .dots span{
+      width:6px;height:6px;border-radius:50%;
+      background: rgba(234,242,255,.65);
+      animation: blink 1.1s infinite ease-in-out;
+    }
+    .dots span:nth-child(2){ animation-delay:.15s; }
+    .dots span:nth-child(3){ animation-delay:.3s; }
+    @keyframes blink{
+      0%,100%{ opacity:.25; transform: translateY(0); }
+      50%{ opacity:1; transform: translateY(-2px); }
+    }
+
+    .chatFooter{
+      padding:12px;
+      border-top:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.10);
+    }
+
+    .composer{
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+    }
+
+    .inputWrap{
+      flex:1;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      border-radius: 16px;
+      padding:10px;
+    }
+
+    textarea{
+      width:100%;
+      border:none;
+      outline:none;
+      resize:none;
+      background:transparent;
+      color:var(--text);
+      font-size:14px;
+      line-height:1.6;
+      min-height:44px;
+      max-height:140px;
+    }
+    textarea::placeholder{ color: rgba(234,242,255,.55); }
+
+    .sendBtn{
+      min-width:120px;
+      border:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:12px 14px;
+      color:white;
+      font-weight:700;
+      background: linear-gradient(135deg, var(--brand1), var(--brand2));
+      box-shadow: 0 16px 35px rgba(59,130,246,.20);
+      transition: transform .08s ease, filter .15s ease;
+    }
+    .sendBtn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+    .sendBtn:active{ transform: translateY(0); }
+    .sendBtn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      filter:none;
+      transform:none;
+    }
+
+    .hintBar{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:8px;
+      color: rgba(234,242,255,.55);
+      font-size:12px;
+    }
+    .kbd{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      padding:2px 6px;
+      border-radius:8px;
+      color: rgba(234,242,255,.85);
+      font-size:11px;
+      margin-inline:3px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shell">
+
+    <!-- LEFT PANEL -->
+    <aside class="panel">
+      <div class="panelHeader">
+        <div class="brandRow">
+          <div class="orb" aria-hidden="true"></div>
+          <div style="min-width:0">
+            <h2 class="title">اسأل الأستاذة أسماء</h2>
+            <p class="subtitle">Math only helper — مساعدة في الرياضيات فقط</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panelBody">
+        <div class="pill"><span class="dot"></span> جاهزة للإجابة خطوة بخطوة</div>
+
+        <div class="card">
+          <h3>أمثلة سريعة (اضغط لإرسالها)</h3>
+          <div class="chips">
+            <div class="chip" onclick="useExample('حل المعادلة: 2x + 3 = 11')">حل المعادلة: 2x + 3 = 11</div>
+            <div class="chip" onclick="useExample('اشتق الدالة: f(x)=x^3 - 5x + 2')">اشتق: f(x)=x^3 - 5x + 2</div>
+            <div class="chip" onclick="useExample('أوجد مساحة دائرة نصف قطرها 7')">مساحة دائرة (r=7)</div>
+            <div class="chip" onclick="useExample('بسّط التعبير: (x^2-1)/(x-1)')">بسّط: (x^2-1)/(x-1)</div>
+            <div class="chip" onclick="useExample('حل نظام المعادلات: x+y=10 و x-y=2')">نظام: x+y=10 و x-y=2</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>ملاحظة</h3>
+          <div class="note">
+            • اكتب السؤال بوضوح.<br/>
+            • يمكنك استخدام الرموز: <b>+, -, ×, ÷, ^</b> أو LaTeX مثل: <b>$x^2$</b><br/>
+            • إذا كان هناك رسم/صورة، اكتب المعطيات نصيًا.
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CHAT -->
+    <main class="chat">
+      <div class="chatHeader">
+        <div class="left">
+          <div style="width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:grid;place-items:center;">∑</div>
+          <div style="min-width:0">
+            <div style="font-weight:800;letter-spacing:.2px;">جلسة الرياضيات</div>
+            <div style="color:rgba(234,242,255,.65);font-size:12px;">اكتب سؤالك وسأشرحه خطوة بخطوة</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="iconBtn" onclick="clearChat()">مسح المحادثة</button>
+          <div class="tag">POST فقط</div>
+        </div>
+      </div>
+
+      <div id="chatBody" class="chatBody"></div>
+
+      <div class="chatFooter">
+        <div class="composer">
+          <div class="inputWrap">
+            <textarea id="q" placeholder="اكتب سؤالك في الرياضيات هنا..."></textarea>
+          </div>
+          <button id="sendBtn" class="sendBtn" onclick="send()">إرسال</button>
+        </div>
+        <div class="hintBar">
+          <div>للإرسال: <span class="kbd">Enter</span> — سطر جديد: <span class="kbd">Shift</span> + <span class="kbd">Enter</span></div>
+          <div id="status"></div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+<script>
+/* ✅ ضع رابط Cloudflare Worker هنا فقط */
+const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
+
+/* ====== Config ====== */
+const REQUEST_TIMEOUT_MS = 25000;
+const RETRY_ON_NETWORK_ERROR = 1;
+
+/* ====== UI helpers ====== */
+const chatBody = document.getElementById("chatBody");
+const qEl = document.getElementById("q");
+const sendBtn = document.getElementById("sendBtn");
+const statusEl = document.getElementById("status");
+
+function nowTime(){
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  return `${hh}:${mm}`;
+}
+
+function safeText(x){
+  if (x === null || x === undefined) return "";
+  if (typeof x === "string") return x;
+  try { return JSON.stringify(x, null, 2); } catch { return String(x); }
+}
+
+function addMsg(role, text, meta=""){
+  const row = document.createElement("div");
+  row.className = "msgRow " + (role === "me" ? "me" : "bot");
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  const metaDiv = document.createElement("div");
+  metaDiv.className = "meta";
+  metaDiv.innerHTML = `<span>${role === "me" ? "أنت" : "الأستاذة أسماء"}</span> • <span>${meta || nowTime()}</span>`;
+
+  const wrap = document.createElement("div");
+  wrap.appendChild(bubble);
+  wrap.appendChild(metaDiv);
+
+  row.appendChild(wrap);
+  chatBody.appendChild(row);
+  chatBody.scrollTop = chatBody.scrollHeight;
+
+  if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
+    window.MathJax.typesetPromise([bubble]).catch(()=>{});
+  }
+}
+
+let typingRow = null;
+function showTyping(){
+  if(typingRow) return;
+  typingRow = document.createElement("div");
+  typingRow.className = "msgRow bot";
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerHTML = `
+    <div class="typing">
+      <span>الأستاذة أسماء تكتب</span>
+      <span class="dots"><span></span><span></span><span></span></span>
+    </div>
+  `;
+  typingRow.appendChild(bubble);
+  chatBody.appendChild(typingRow);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function hideTyping(){
+  if(!typingRow) return;
+  typingRow.remove();
+  typingRow = null;
+}
+
+function setBusy(b){
+  sendBtn.disabled = b;
+  qEl.disabled = b;
+  statusEl.textContent = b ? "⏳ جاري الإرسال..." : "";
+}
+
+function clearChat(){
+  chatBody.innerHTML = "";
+  addMsg("bot", "أهلًا! اكتب سؤالك في الرياضيات وسأشرحه لك خطوة بخطوة.");
+}
+
+/* ====== Examples ====== */
+function useExample(t){
+  qEl.value = t;
+  qEl.focus();
+  autoResize();
+}
+
+/* ====== Safe fetch with timeout + optional retry ====== */
+async function postJSONWithTimeout(url, payload, timeoutMs){
+  const controller = new AbortController();
+  const t = setTimeout(() => controller.abort(), timeoutMs);
+
+  // cache-buster to avoid weird caching
+  const finalUrl = url + (url.includes("?") ? "&" : "?") + "v=" + Date.now();
+
+  try{
+    const res = await fetch(finalUrl, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    return res;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function readMaybeJSON(res){
+  const ct = (res.headers.get("content-type") || "").toLowerCase();
+  const text = await res.text();
+  if(ct.includes("application/json")){
+    try{ return JSON.parse(text); } catch { return { raw: text }; }
+  }
+  // some workers return plain text
+  try { return JSON.parse(text); } catch { return { answer: text }; }
+}
+
+/* ====== Send ====== */
+async function send(){
+  const q = qEl.value.trim();
+  if(!q) return;
+
+  if(!WORKER_URL || !/^https?:\/\//i.test(WORKER_URL)){
+    addMsg("bot", "رابط الـ Worker غير صحيح. عدّل WORKER_URL في الكود.");
+    return;
+  }
+
+  addMsg("me", q);
+  qEl.value = "";
+  autoResize();
+
+  setBusy(true);
+  showTyping();
+
+  let attempt = 0;
+
+  while(true){
+    try{
+      // ✅ IMPORTANT: send {message: "..."} exactly
+      const res = await postJSONWithTimeout(
+        WORKER_URL,
+        { message: q },
+        REQUEST_TIMEOUT_MS
+      );
+
+      const data = await readMaybeJSON(res);
+
+      hideTyping();
+
+      if(!res.ok){
+        const msg = data?.error || data?.message || data?.answer || data?.raw || `HTTP ${res.status}`;
+        addMsg("bot", "تعذر الاتصال بالخادم.\n" + safeText(msg));
+      }else{
+        const ans = (data?.answer ?? data?.message ?? data?.result ?? data?.raw ?? "");
+        addMsg("bot", String(ans).trim() ? String(ans) : "تم الاستلام لكن لم يصلني نص جواب واضح من الخادم.");
+      }
+      break;
+
+    }catch(e){
+      attempt++;
+
+      if(e && e.name === "AbortError"){
+        hideTyping();
+        addMsg("bot", "تأخر الرد أكثر من اللازم.\nحاول مرة أخرى، أو تأكد أن الـ Worker يرجع جوابًا بسرعة.");
+        break;
+      }
+
+      if(attempt <= RETRY_ON_NETWORK_ERROR){
+        continue; // retry once
+      }
+
+      hideTyping();
+      addMsg("bot", "تعذر الاتصال بالخادم.\n" + safeText(e?.message || e));
+      break;
+
+    }finally{
+      if(!typingRow){
+        setBusy(false);
+      }
+    }
+  }
+
+  setBusy(false);
+}
+
+/* ====== UX: Enter to send ====== */
+qEl.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter" && !e.shiftKey){
+    e.preventDefault();
+    send();
+  }
+});
+
+/* ====== Autosize textarea ====== */
+function autoResize(){
+  qEl.style.height = "auto";
+  qEl.style.height = Math.min(qEl.scrollHeight, 140) + "px";
+}
+qEl.addEventListener("input", autoResize);
+autoResize();
+
+/* init */
+clearChat();
+</script>
+
+</body>
+</html>

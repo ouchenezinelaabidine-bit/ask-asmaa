@@ -1,320 +1,728 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>الأستاذة أسماء عبد الله مهدي | منصة الرياضيات</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>اسأل الأستاذة أسماء</title>
+
+<!-- Font (Arabic + Latin) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <!-- MathJax -->
 <script>
-window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 <style>
 :root{
-  --bg:#061225;
+  --bg0:#050c18;
+  --bg1:#071426;
   --panel:#0b1f3a;
   --panel2:#0f2a52;
-  --line:rgba(255,255,255,.08);
+  --line:rgba(255,255,255,.09);
   --text:#eaf2ff;
-  --muted:#9fb3d9;
+  --muted:#a2b4d8;
+
   --accent:#4da3ff;
-  --whatsapp:#25d366;
-  --facebook:#1877f2;
-  --bot:#132c52;
+  --accent2:#76c3ff;
+
+  --meGrad: linear-gradient(135deg, #1e90ff, #4da3ff);
+  --botBg:#122b52;
+
+  --danger:#ff4d5a;
+  --ok:#23c36b;
+
+  --shadow: 0 28px 90px rgba(0,0,0,.55);
+  --shadow2: 0 12px 35px rgba(0,0,0,.35);
+  --r:18px;
 }
+
 *{box-sizing:border-box}
+html,body{height:100%}
 body{
   margin:0;
-  font-family:system-ui,Segoe UI,Arial;
-  background:linear-gradient(180deg,#061225,#071b33);
+  font-family:"Cairo", system-ui, Segoe UI, Arial;
+  background:
+    radial-gradient(1200px 650px at 15% 10%, rgba(77,163,255,.18), transparent 55%),
+    radial-gradient(900px 600px at 85% 15%, rgba(118,195,255,.12), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
   color:var(--text);
-  min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-}
-.app{
-  width:100%;
-  max-width:1200px;
-  height:100vh;
-  max-height:860px;
-  display:grid;
-  grid-template-columns: 360px 1fr;
-}
-@media(max-width:900px){
-  .app{
-    grid-template-columns:1fr;
-    grid-template-rows:auto 1fr;
-    height:100vh;
-  }
+  padding:14px;
 }
 
-/* Sidebar */
-.sidebar{
-  background:var(--panel);
-  border-left:1px solid var(--line);
-  padding:18px;
+.app{
+  width:min(1200px,100%);
+  min-height:100svh;
+  display:grid;
+  grid-template-columns: 360px 1fr;
+  gap:14px;
 }
-.sidebar h1{
-  margin:0;
-  font-size:20px;
-  font-weight:800;
+
+@media (max-width: 980px){
+  .app{ grid-template-columns: 1fr; }
 }
-.sidebar p{
-  margin:8px 0 16px;
-  font-size:13px;
-  color:var(--muted);
-  line-height:1.7;
-}
-.card{
-  background:var(--panel2);
+
+/* Right note panel */
+.side{
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius: calc(var(--r) + 6px);
+  box-shadow: var(--shadow2);
+  overflow:hidden;
+}
+
+.sideHeader{
+  padding:16px 16px 12px;
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(800px 260px at 15% 0%, rgba(77,163,255,.22), transparent 60%),
+    radial-gradient(700px 260px at 90% 0%, rgba(118,195,255,.16), transparent 65%);
+}
+.brandRow{display:flex;gap:12px;align-items:center}
+.badgeOrb{
+  width:44px;height:44px;border-radius:14px;
+  background: conic-gradient(from 180deg, #1e90ff, #76c3ff, #1e90ff);
+  box-shadow: 0 0 0 6px rgba(77,163,255,.10), 0 18px 40px rgba(0,0,0,.45);
+}
+.sideTitle{margin:0;font-size:18px;font-weight:800;letter-spacing:.2px}
+.sideSub{margin:2px 0 0;font-size:13px;color:rgba(234,242,255,.75);line-height:1.6}
+
+.sideBody{padding:14px 16px 16px}
+.card{
+  border:1px solid var(--line);
+  background: rgba(0,0,0,.18);
+  border-radius: var(--r);
   padding:14px;
-  margin-bottom:14px;
+  margin-top:12px;
 }
 .card h3{
   margin:0 0 8px;
-  font-size:15px;
+  font-size:14px;
+  color:#dbe7ff;
 }
 .card p{
   margin:0;
+  color:rgba(234,242,255,.78);
   font-size:13px;
-  color:var(--muted);
-  line-height:1.7;
+  line-height:1.75;
 }
-.lang{
+.pills{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:10px
+}
+.pill{
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  color:#eaf2ff;
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:12.5px;
+  cursor:pointer;
+  user-select:none;
+  transition: transform .08s ease, background .15s ease;
+}
+.pill:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+.pill:active{ transform: translateY(0); }
+
+.langRow{
   display:flex;
   gap:8px;
+  margin-top:10px;
 }
-.lang button{
+.langBtn{
   flex:1;
-  border-radius:999px;
   border:1px solid var(--line);
-  background:transparent;
-  color:var(--text);
-  padding:8px;
+  background: rgba(255,255,255,.06);
+  color:#eaf2ff;
+  padding:10px 10px;
+  border-radius: 999px;
+  font-weight:800;
   cursor:pointer;
+  transition: filter .15s ease, transform .08s ease, background .15s ease;
 }
-.lang button.active{
-  background:var(--accent);
+.langBtn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+.langBtn:active{ transform: translateY(0); }
+.langBtn.active{
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
   color:#041225;
+  border-color: rgba(77,163,255,.35);
 }
 
-/* Chat */
-.chatWrap{
-  background:var(--bg);
+/* Chat panel */
+.chatPanel{
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+  border:1px solid var(--line);
+  border-radius: calc(var(--r) + 6px);
+  box-shadow: var(--shadow);
+  overflow:hidden;
   display:flex;
   flex-direction:column;
 }
+
 .chatHeader{
   padding:14px 16px;
   border-bottom:1px solid var(--line);
-  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  background:
+    linear-gradient(90deg, rgba(77,163,255,.16), rgba(118,195,255,.08));
 }
+.chatHeaderLeft{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{
+  width:40px;height:40px;border-radius:14px;
+  background: rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  display:grid;place-items:center;
+  font-weight:900;
+}
+.hTitle{margin:0;font-weight:900;font-size:16px}
+.hSub{margin:0;color:rgba(234,242,255,.72);font-size:12.5px}
+
+.headerBtns{display:flex;gap:8px;align-items:center}
+.iconBtn{
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  color:#eaf2ff;
+  padding:10px 12px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:900;
+  transition: filter .15s ease, transform .08s ease;
+}
+.iconBtn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+.iconBtn:active{ transform: translateY(0); }
+.iconBtn.danger{ border-color: rgba(255,77,90,.35); }
+.iconBtn.danger:hover{ filter: brightness(1.08); }
+
 .chat{
   flex:1;
-  padding:16px;
+  padding:16px 14px;
   overflow:auto;
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
+  scroll-behavior:smooth;
 }
-.msg{
-  max-width:80%;
-  padding:12px 14px;
-  border-radius:18px;
-  line-height:1.7;
-  white-space:pre-wrap;
-  box-shadow:0 6px 20px rgba(0,0,0,.25);
-}
-.me{
-  align-self:flex-start;
-  background:linear-gradient(135deg,var(--facebook),#4da3ff);
-  color:#041225;
-}
-.bot{
-  align-self:flex-end;
-  background:var(--bot);
+
+/* Message rows */
+.row{ display:flex; gap:10px; }
+.row.me{ justify-content:flex-start; }     /* RTL start = right */
+.row.bot{ justify-content:flex-end; }
+
+.bubble{
+  max-width: 86%;
+  padding:12px 12px;
+  border-radius:16px;
   border:1px solid var(--line);
+  line-height:1.8;
+  font-size:14.5px;
+  white-space:pre-wrap;
+  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+  animation: fadeIn .18s ease;
 }
+@keyframes fadeIn{
+  from{ opacity:0; transform: translateY(6px); }
+  to{ opacity:1; transform:none; }
+}
+.me .bubble{
+  background: var(--meGrad);
+  color:#041225;
+  border-color: rgba(77,163,255,.35);
+}
+.bot .bubble{
+  background: linear-gradient(135deg, rgba(18,43,82,.95), rgba(18,43,82,.75));
+  border-color: rgba(255,255,255,.10);
+}
+
 .meta{
   font-size:12px;
-  color:var(--muted);
-  margin-top:4px;
+  color:rgba(234,242,255,.55);
+  margin-top:6px;
+  display:flex;
+  gap:8px;
+  align-items:center;
 }
-.typing{
-  align-self:flex-end;
+
+.typingBubble{
+  max-width: 70%;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px dashed rgba(77,163,255,.35);
+  background: rgba(18,43,82,.55);
+  color: rgba(234,242,255,.80);
+  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+}
+.typingLine{
+  display:flex;
+  align-items:center;
+  gap:8px;
   font-size:13px;
-  color:var(--muted);
+  font-weight:700;
 }
+.dots{display:inline-flex;gap:5px;align-items:center}
 .dots span{
-  display:inline-block;
-  width:6px;height:6px;
-  background:var(--accent);
-  border-radius:50%;
-  margin:0 1px;
-  animation:blink 1.4s infinite both;
+  width:7px;height:7px;border-radius:50%;
+  background: var(--accent);
+  animation: blink 1.1s infinite ease-in-out;
 }
-.dots span:nth-child(2){animation-delay:.2s}
-.dots span:nth-child(3){animation-delay:.4s}
+.dots span:nth-child(2){animation-delay:.15s}
+.dots span:nth-child(3){animation-delay:.30s}
 @keyframes blink{
-  0%,80%,100%{opacity:.2}
-  40%{opacity:1}
+  0%,100%{opacity:.25; transform: translateY(0);}
+  50%{opacity:1; transform: translateY(-2px);}
 }
 
 /* Composer */
 .composer{
-  padding:12px;
+  padding:12px 12px 14px;
   border-top:1px solid var(--line);
+  background: rgba(0,0,0,.12);
+}
+.composerRow{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+}
+.inputWrap{
+  flex:1;
+  border:1px solid var(--line);
+  background: rgba(0,0,0,.22);
+  border-radius: 18px;
+  padding:10px 12px;
+}
+textarea{
+  width:100%;
+  border:none;
+  outline:none;
+  resize:none;
+  background:transparent;
+  color:var(--text);
+  font-size:15px;
+  line-height:1.7;
+  min-height:44px;
+  max-height:140px;
+  font-family: "Cairo", system-ui, Segoe UI, Arial;
+}
+textarea::placeholder{ color: rgba(234,242,255,.55); }
+
+.actionsCol{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width: 150px;
+}
+@media(max-width: 520px){
+  .actionsCol{ min-width: 120px; }
+}
+
+.btn{
+  border:none;
+  cursor:pointer;
+  border-radius: 14px;
+  padding:11px 12px;
+  font-weight:900;
+  color:#041225;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 16px 35px rgba(77,163,255,.18);
+  transition: transform .08s ease, filter .15s ease;
+}
+.btn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+.btn:active{ transform: translateY(0); }
+.btn:disabled{ opacity:.55; cursor:not-allowed; filter:none; transform:none; }
+
+.btn.secondary{
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  border:1px solid var(--line);
+  box-shadow:none;
+}
+
+.fileLabel{
+  display:block;
+  text-align:center;
+  user-select:none;
+}
+.fileLabel input{ display:none; }
+
+.preview{
+  margin-top:8px;
+  font-size:12.5px;
+  color: rgba(234,242,255,.60);
   display:flex;
   gap:10px;
   align-items:center;
+  justify-content:space-between;
 }
-textarea{
-  flex:1;
-  resize:none;
-  min-height:46px;
-  max-height:120px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:#041225;
-  color:var(--text);
-  padding:12px 16px;
-  font-size:15px;
+.preview b{ color:#fff; }
+.kbdHint{
+  margin-top:8px;
+  font-size:12px;
+  color: rgba(234,242,255,.55);
 }
-.actions{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+.kbd{
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.20);
+  padding:2px 6px;
+  border-radius:8px;
+  color: rgba(234,242,255,.85);
+  font-size:11px;
+  margin-inline:3px;
 }
-.btn{
-  border:0;
-  border-radius:999px;
-  padding:10px 14px;
-  font-weight:800;
-  cursor:pointer;
-  color:#fff;
-}
-.send{ background:var(--whatsapp); }
-.clear{ background:#ef4444; }
-.upload{ background:var(--facebook); }
-.btn:disabled{opacity:.5}
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h1>الأستاذة أسماء عبد الله مهدي</h1>
-    <p>منصة تعليمية متخصصة في شرح الرياضيات بأسلوب واضح واحترافي.</p>
-
-    <div class="card">
-      <h3>طريقة التواصل</h3>
-      <p>
-        • اكتب التمرين بوضوح<br>
-        • استخدم الرموز الرياضية<br>
-        • يمكنك رفع صورة تمرين<br>
-        • الرد يكون خطوة بخطوة
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>اللغة</h3>
-      <div class="lang">
-        <button class="active" onclick="setLang('ar')">العربية</button>
-        <button onclick="setLang('en')">English</button>
+  <!-- Right (note) panel - as requested -->
+  <aside class="side">
+    <div class="sideHeader">
+      <div class="brandRow">
+        <div class="badgeOrb" aria-hidden="true"></div>
+        <div style="min-width:0">
+          <h2 class="sideTitle" id="sideTitle">الأستاذة أسماء</h2>
+          <p class="sideSub" id="sideSub">منصة رياضيات مميزة • شرح خطوة بخطوة</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Chat -->
-  <div class="chatWrap">
-    <div class="chatHeader">جلسة الرياضيات</div>
+    <div class="sideBody">
+      <div class="card">
+        <h3 id="howTitle">طريقة التواصل</h3>
+        <p id="howText">
+          • اكتب السؤال بوضوح داخل الدردشة.<br>
+          • يمكنك استخدام الرموز: + − × ÷ و ^.<br>
+          • لكتابة الكسور استخدم LaTeX مثل: $\\frac{1}{2}$.<br>
+          • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.
+        </p>
+        <div class="pills" id="pills">
+          <span class="pill" data-ex="حل المعادلة: 2x + 3 = 11">حل معادلة</span>
+          <span class="pill" data-ex="اشتق الدالة: f(x)=x^3 - 5x + 2">اشتقاق</span>
+          <span class="pill" data-ex="بسّط: (x^2-1)/(x-1)">تبسيط</span>
+          <span class="pill" data-ex="أوجد مساحة دائرة نصف قطرها 7">مساحة دائرة</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 id="langTitle">اختيار اللغة</h3>
+        <div class="langRow">
+          <button class="langBtn active" id="btnAr" type="button">العربية</button>
+          <button class="langBtn" id="btnEn" type="button">English</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 id="noteTitle">ملاحظة</h3>
+        <p id="noteText">
+          رفع صورة التمرين متاح الآن كزر، وتحليل الصورة يحتاج تفعيل لاحق داخل الـ Worker.
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat panel -->
+  <main class="chatPanel">
+    <div class="chatHeader">
+      <div class="chatHeaderLeft">
+        <div class="logo">∑</div>
+        <div style="min-width:0">
+          <p class="hTitle" id="mainTitle">جلسة الرياضيات</p>
+          <p class="hSub" id="mainSub">اكتب سؤالك وسأشرحه خطوة بخطوة</p>
+        </div>
+      </div>
+
+      <div class="headerBtns">
+        <button class="iconBtn danger" id="clearBtn" type="button">مسح</button>
+      </div>
+    </div>
+
     <div id="chat" class="chat"></div>
 
     <div class="composer">
-      <textarea id="input" placeholder="اكتب سؤالك في الرياضيات..."></textarea>
-      <div class="actions">
-        <button class="btn send" id="send">إرسال</button>
-        <button class="btn upload">➕ تمرين</button>
-        <button class="btn clear" id="clear">مسح</button>
+      <div class="composerRow">
+        <div class="inputWrap">
+          <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا..."></textarea>
+        </div>
+
+        <div class="actionsCol">
+          <button class="btn" id="sendBtn" type="button">إرسال</button>
+
+          <label class="btn secondary fileLabel" id="uploadLabel">
+            رفع صورة التمرين
+            <input id="imageInput" type="file" accept="image/*">
+          </label>
+        </div>
+      </div>
+
+      <div class="preview">
+        <span id="imgStatus"></span>
+        <span id="statusText"></span>
+      </div>
+
+      <div class="kbdHint" id="kbdHint">
+        للإرسال: <span class="kbd">Enter</span> — سطر جديد: <span class="kbd">Shift</span> + <span class="kbd">Enter</span>
       </div>
     </div>
-  </div>
+  </main>
 
 </div>
 
 <script>
-const WORKER_URL="https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
-const chat=document.getElementById("chat");
-const input=document.getElementById("input");
-const sendBtn=document.getElementById("send");
-const clearBtn=document.getElementById("clear");
+/* ✅ Worker URL */
+const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
 
-function add(role,text){
-  const m=document.createElement("div");
-  m.className="msg "+role;
-  m.textContent=text;
-  chat.appendChild(m);
-  const meta=document.createElement("div");
-  meta.className="meta";
-  meta.textContent=new Date().toLocaleTimeString();
-  chat.appendChild(meta);
-  chat.scrollTop=chat.scrollHeight;
-  if(window.MathJax) MathJax.typesetPromise([m]).catch(()=>{});
+/* Elements */
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("sendBtn");
+const clearBtn = document.getElementById("clearBtn");
+const imgInput = document.getElementById("imageInput");
+const imgStatus = document.getElementById("imgStatus");
+const statusText = document.getElementById("statusText");
+
+const btnAr = document.getElementById("btnAr");
+const btnEn = document.getElementById("btnEn");
+
+/* Language strings */
+const I18N = {
+  ar: {
+    sideTitle: "الأستاذة أسماء",
+    sideSub: "منصة رياضيات مميزة • شرح خطوة بخطوة",
+    howTitle: "طريقة التواصل",
+    howText:
+`• اكتب السؤال بوضوح داخل الدردشة.
+• يمكنك استخدام الرموز: + − × ÷ و ^.
+• لكتابة الكسور استخدم LaTeX مثل: $\\frac{1}{2}$.
+• أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.`,
+    langTitle: "اختيار اللغة",
+    noteTitle: "ملاحظة",
+    noteText: "رفع صورة التمرين متاح الآن كزر، وتحليل الصورة يحتاج تفعيل لاحق داخل الـ Worker.",
+    mainTitle: "جلسة الرياضيات",
+    mainSub: "اكتب سؤالك وسأشرحه خطوة بخطوة",
+    clear: "مسح",
+    send: "إرسال",
+    upload: "رفع صورة التمرين",
+    placeholder: "اكتب سؤالك في الرياضيات هنا...",
+    greeting: "أهلًا بك! اكتب سؤالك في الرياضيات وسأشرحه خطوة بخطوة.",
+    cleared: "تم مسح المحادثة. ابدأ تمرينًا جديدًا.",
+    preparing: "الأستاذة أسماء تُحضّر الإجابة",
+    imgPicked: "تم اختيار صورة",
+    imgNone: "",
+    busy: "جاري الإرسال..."
+  },
+  en: {
+    sideTitle: "Ms. Asmaa",
+    sideSub: "Math platform • Step-by-step explanations",
+    howTitle: "How to ask",
+    howText:
+`• Write your question clearly.
+• You can use symbols: + − × ÷ and ^.
+• For fractions use LaTeX: $\\frac{1}{2}$.
+• Send one exercise at a time for best accuracy.`,
+    langTitle: "Language",
+    noteTitle: "Note",
+    noteText: "Image upload button is ready. Image solving requires enabling it in the Worker later.",
+    mainTitle: "Math Session",
+    mainSub: "Type your question and get a step-by-step solution",
+    clear: "Clear",
+    send: "Send",
+    upload: "Upload exercise image",
+    placeholder: "Type your math question here...",
+    greeting: "Welcome! Type your math question and I’ll explain it step by step.",
+    cleared: "Chat cleared. Start a new exercise.",
+    preparing: "Ms. Asmaa is preparing the answer",
+    imgPicked: "Image selected",
+    imgNone: "",
+    busy: "Sending..."
+  }
+};
+
+let lang = "ar";
+
+/* Helpers */
+function nowTime(){
+  const d = new Date();
+  return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
 
-let typing;
-function showTyping(){
-  typing=document.createElement("div");
-  typing.className="typing";
-  typing.innerHTML='الأستاذة أسماء تُحضّر الإجابة <span class="dots"><span></span><span></span><span></span></span>';
-  chat.appendChild(typing);
-  chat.scrollTop=chat.scrollHeight;
+function scrollToBottom(){
+  chat.scrollTop = chat.scrollHeight;
 }
-function hideTyping(){ if(typing) typing.remove(); }
 
-async function send(){
-  const q=input.value.trim();
-  if(!q) return;
-  add("me",q);
-  input.value="";
-  sendBtn.disabled=true;
-  showTyping();
-  try{
-    const r=await fetch(WORKER_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({message:q})
-    });
-    const raw=await r.text();
-    let d; try{d=JSON.parse(raw)}catch{d={answer:raw}};
-    hideTyping();
-    add("bot",(d.answer||"").trim()||"لا يوجد رد.");
-  }catch{
-    hideTyping();
-    add("bot","تعذر الاتصال.");
-  }finally{
-    sendBtn.disabled=false;
+function addMsg(role, text){
+  const row = document.createElement("div");
+  row.className = "row " + (role === "me" ? "me" : "bot");
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.innerHTML = `<span>${role === "me" ? (lang==="ar"?"أنت":"You") : (lang==="ar"?"الأستاذة أسماء":"Ms. Asmaa")}</span> • <span>${nowTime()}</span>`;
+
+  const wrap = document.createElement("div");
+  wrap.appendChild(bubble);
+  wrap.appendChild(meta);
+
+  row.appendChild(wrap);
+  chat.appendChild(row);
+  scrollToBottom();
+
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([bubble]).catch(()=>{});
   }
 }
-sendBtn.onclick=send;
-clearBtn.onclick=()=>{ chat.innerHTML=""; add("bot","ابدأ تمرينًا جديدًا."); };
-input.addEventListener("keydown",e=>{
-  if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send(); }
-});
 
-function setLang(l){
-  document.querySelectorAll(".lang button").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
+let typingRow = null;
+function showTyping(){
+  if(typingRow) return;
+  typingRow = document.createElement("div");
+  typingRow.className = "row bot";
+  const bubble = document.createElement("div");
+  bubble.className = "typingBubble";
+  bubble.innerHTML = `
+    <div class="typingLine">
+      <span>${I18N[lang].preparing}</span>
+      <span class="dots"><span></span><span></span><span></span></span>
+    </div>
+  `;
+  typingRow.appendChild(bubble);
+  chat.appendChild(typingRow);
+  scrollToBottom();
 }
 
-add("bot","مرحبًا بك في منصة الرياضيات، تفضل بطرح سؤالك.");
+function hideTyping(){
+  if(!typingRow) return;
+  typingRow.remove();
+  typingRow = null;
+}
+
+function setBusy(b){
+  sendBtn.disabled = b;
+  input.disabled = b;
+  statusText.textContent = b ? I18N[lang].busy : "";
+}
+
+/* Fetch */
+async function send(){
+  const q = input.value.trim();
+  if(!q) return;
+
+  addMsg("me", q);
+  input.value = "";
+  autoResize();
+
+  setBusy(true);
+
+  // ✅ Mobile reflow fix
+  await new Promise(r => setTimeout(r, 50));
+
+  showTyping();
+
+  try{
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ message: q })
+    });
+
+    const raw = await res.text();
+    let data;
+    try{ data = JSON.parse(raw); } catch { data = { answer: raw }; }
+
+    hideTyping();
+    addMsg("bot", (data.answer || "").toString().trim() || (lang==="ar" ? "لا يوجد رد واضح." : "No clear answer returned."));
+  }catch(e){
+    hideTyping();
+    addMsg("bot", lang==="ar" ? "تعذر الاتصال بالخادم." : "Connection failed.");
+  }finally{
+    setBusy(false);
+    scrollToBottom();
+  }
+}
+
+/* Language apply */
+function applyLang(next){
+  lang = next;
+  const t = I18N[lang];
+
+  document.getElementById("sideTitle").textContent = t.sideTitle;
+  document.getElementById("sideSub").textContent = t.sideSub;
+  document.getElementById("howTitle").textContent = t.howTitle;
+  document.getElementById("howText").innerHTML = t.howText.replaceAll("\n","<br>");
+  document.getElementById("langTitle").textContent = t.langTitle;
+  document.getElementById("noteTitle").textContent = t.noteTitle;
+  document.getElementById("noteText").textContent = t.noteText;
+
+  document.getElementById("mainTitle").textContent = t.mainTitle;
+  document.getElementById("mainSub").textContent = t.mainSub;
+
+  clearBtn.textContent = t.clear;
+  sendBtn.textContent = t.send;
+  document.getElementById("uploadLabel").childNodes[0].textContent = t.upload + " ";
+
+  input.placeholder = t.placeholder;
+
+  btnAr.classList.toggle("active", lang==="ar");
+  btnEn.classList.toggle("active", lang==="en");
+}
+
+/* Image button (UI only for now) */
+imgInput.addEventListener("change", ()=>{
+  if(imgInput.files && imgInput.files[0]){
+    imgStatus.innerHTML = `📷 <b>${I18N[lang].imgPicked}</b>: ${imgInput.files[0].name}`;
+  }else{
+    imgStatus.textContent = I18N[lang].imgNone;
+  }
+});
+
+/* Clear */
+clearBtn.addEventListener("click", ()=>{
+  chat.innerHTML = "";
+  addMsg("bot", I18N[lang].cleared);
+});
+
+/* Examples */
+document.getElementById("pills").addEventListener("click", (e)=>{
+  const pill = e.target.closest(".pill");
+  if(!pill) return;
+  input.value = pill.dataset.ex || "";
+  input.focus();
+  autoResize();
+});
+
+/* Enter to send */
+sendBtn.addEventListener("click", send);
+input.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter" && !e.shiftKey){
+    e.preventDefault();
+    send();
+  }
+});
+
+/* Autosize */
+function autoResize(){
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 140) + "px";
+}
+input.addEventListener("input", autoResize);
+autoResize();
+
+/* Init */
+applyLang("ar");
+addMsg("bot", I18N[lang].greeting);
 </script>
 </body>
 </html>

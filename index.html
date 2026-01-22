@@ -9,6 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+<!-- MathJax -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
 <style>
 :root{
   --bg0:#050c18;
@@ -126,7 +135,6 @@ body{
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  position:relative;
 }
 .chatHeader{
   padding:14px 16px;
@@ -148,6 +156,7 @@ body{
 .hTitle{margin:0;font-weight:900;font-size:16px}
 .hSub{margin:0;color:rgba(234,242,255,.72);font-size:12.5px}
 
+/* ✅ chat scroll + smooth */
 .chat{
   flex:1;
   padding:16px 14px;
@@ -156,7 +165,7 @@ body{
   flex-direction:column;
   gap:12px;
   scroll-behavior:smooth;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch; /* iOS Safari */
 }
 
 /* messages */
@@ -296,10 +305,10 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
   margin-inline:3px;
 }
 
-/* scroll-to-top button */
+/* ✅ Scroll-to-top floating button */
 .toTop{
   position:absolute;
-  left:14px;
+  left:14px; /* RTL: left is fine */
   bottom:92px;
   width:46px;
   height:46px;
@@ -328,6 +337,7 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 </head>
 
 <body>
+
 <div class="app">
 
   <aside class="side">
@@ -346,15 +356,14 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
         <h3 id="howTitle">طريقة التواصل</h3>
         <p id="howText">
           • اكتب السؤال بوضوح داخل الدردشة.<br>
-          • استخدم كتابة عادية (بدون LaTeX). مثال: "x مربع" بدل "x^2".<br>
+          • لكتابة الكسور استخدم LaTeX مثل: $\\frac{1}{2}$.<br>
           • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.
         </p>
-
         <div class="pills" id="pills">
           <span class="pill" data-ex="حل المعادلة: 2x + 3 = 11">حل معادلة</span>
-          <span class="pill" data-ex="حل المعادلة التفاضلية: مشتقة y تساوي y">تفاضلية</span>
-          <span class="pill" data-ex="اشتق الدالة: f(x) = x مكعب ناقص 5x زائد 2">اشتقاق</span>
-          <span class="pill" data-ex="بسّط: (x مربع ناقص 1) على (x ناقص 1)">تبسيط</span>
+          <span class="pill" data-ex="حل المعادلة التفاضلية: y' = y">تفاضلية</span>
+          <span class="pill" data-ex="اشتق الدالة: f(x)=x^3 - 5x + 2">اشتقاق</span>
+          <span class="pill" data-ex="بسّط: (x^2-1)/(x-1)">تبسيط</span>
         </div>
       </div>
 
@@ -368,12 +377,12 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 
       <div class="card">
         <h3 id="noteTitle">ملاحظة</h3>
-        <p id="noteText">الشرح سيكون نصيًا عاديًا فقط (بدون LaTeX) حسب طلبك.</p>
+        <p id="noteText">اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.</p>
       </div>
     </div>
   </aside>
 
-  <main class="chatPanel">
+  <main class="chatPanel" style="position:relative">
     <div class="chatHeader">
       <div class="chatHeaderLeft">
         <div class="logo">∑</div>
@@ -386,6 +395,7 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 
     <div id="chat" class="chat"></div>
 
+    <!-- ✅ زر الرجوع للأعلى -->
     <button id="toTop" class="toTop" type="button" aria-label="الرجوع للأعلى">
       <span>↑</span>
     </button>
@@ -393,7 +403,7 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
     <div class="composer">
       <div class="composerRow">
         <div class="inputWrap">
-          <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا... (بدون LaTeX)"></textarea>
+          <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا..."></textarea>
         </div>
 
         <div class="actionsCol">
@@ -437,17 +447,18 @@ const I18N = {
     howTitle: "طريقة التواصل",
     howText:
 `• اكتب السؤال بوضوح داخل الدردشة.
-• اكتب كتابة عادية بدون LaTeX.
-• أرسل تمرينًا واحدًا في كل مرة.`,
+• يمكنك استخدام الرموز: + − × ÷ و ^.
+• لكتابة الكسور استخدم LaTeX مثل: $\\frac{1}{2}$.
+• أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.`,
     langTitle: "اختيار اللغة",
     noteTitle: "ملاحظة",
-    noteText: "الشرح سيكون نصيًا عاديًا فقط (بدون LaTeX).",
+    noteText: "اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.",
     mainTitle: "جلسة الرياضيات",
     mainSub: "اكتب سؤالك وسأشرحه خطوة بخطوة",
     clear: "مسح المحادثة",
     send: "إرسال",
-    placeholder: "اكتب سؤالك في الرياضيات هنا... (بدون LaTeX)",
-    greeting: "أهلًا بك! اكتب سؤالك في الرياضيات وسأشرحه خطوة بخطوة (بدون LaTeX).",
+    placeholder: "اكتب سؤالك في الرياضيات هنا...",
+    greeting: "أهلًا بك! اكتب سؤالك في الرياضيات وسأشرحه خطوة بخطوة.",
     cleared: "تم مسح المحادثة. ابدأ تمرينًا جديدًا.",
     preparing: "الأستاذة أسماء تُحضّر الإجابة",
     busy: "جاري الإرسال..."
@@ -458,17 +469,18 @@ const I18N = {
     howTitle: "How to ask",
     howText:
 `• Write your question clearly.
-• Use plain text (no LaTeX).
-• Send one exercise at a time.`,
+• You can use symbols: + − × ÷ and ^.
+• For fractions use LaTeX: $\\frac{1}{2}$.
+• Send one exercise at a time for best accuracy.`,
     langTitle: "Language",
     noteTitle: "Note",
-    noteText: "Answers will be plain text only (no LaTeX).",
+    noteText: "Type your question directly, or tap an example to send it quickly.",
     mainTitle: "Math Session",
     mainSub: "Type your question and get a step-by-step solution",
     clear: "Clear chat",
     send: "Send",
-    placeholder: "Type your math question here... (no LaTeX)",
-    greeting: "Welcome! Type your math question and I’ll explain it step by step (no LaTeX).",
+    placeholder: "Type your math question here...",
+    greeting: "Welcome! Type your math question and I’ll explain it step by step.",
     cleared: "Chat cleared. Start a new exercise.",
     preparing: "Ms. Asmaa is preparing the answer",
     busy: "Sending..."
@@ -502,6 +514,11 @@ function addMsg(role, text){
   row.appendChild(wrap);
   chat.appendChild(row);
 
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([bubble]).catch(()=>{});
+  }
+
+  // Always keep latest visible unless user scrolled up a lot
   const nearBottom = (chat.scrollHeight - chat.scrollTop - chat.clientHeight) < 180;
   if (nearBottom) scrollToBottom();
 }
@@ -545,7 +562,10 @@ async function send(){
   autoResize();
 
   setBusy(true);
+
+  // Mobile reflow fix
   await new Promise(r => setTimeout(r, 50));
+
   showTyping();
 
   try{
@@ -629,9 +649,9 @@ function autoResize(){
 input.addEventListener("input", autoResize);
 autoResize();
 
-/* scroll-to-top */
+/* ✅ Scroll-to-top behavior */
 function updateToTop(){
-  const scrolled = chat.scrollTop > 280;
+  const scrolled = chat.scrollTop > 280; // show after user scrolls down
   toTopBtn.classList.toggle("show", scrolled);
 }
 chat.addEventListener("scroll", updateToTop, { passive:true });
@@ -644,5 +664,6 @@ updateToTop();
 applyLang("ar");
 addMsg("bot", I18N[lang].greeting);
 </script>
+
 </body>
 </html>

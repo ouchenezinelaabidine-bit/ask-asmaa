@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>الأستاذة أسماء عبد الله مهدي | منصة الرياضيات</title>
 
-<!-- MathJax -->
 <script>
 window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
 </script>
@@ -144,12 +143,9 @@ body{
 .composer{
   border-top:1px solid var(--line);
   padding:14px;
-  display:flex;
-  gap:10px;
-  align-items:flex-end;
 }
 textarea{
-  flex:1;
+  width:100%;
   min-height:52px;
   max-height:140px;
   resize:none;
@@ -159,8 +155,9 @@ textarea{
   color:var(--text);
   padding:12px;
   font-size:15px;
+  margin-bottom:10px;
 }
-.controls{
+.actions{
   display:flex;
   flex-direction:column;
   gap:8px;
@@ -174,6 +171,11 @@ button,label.upload{
   background:linear-gradient(135deg,#4da3ff,#6bb7ff);
   color:#041225;
   text-align:center;
+}
+.secondary{
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--line);
 }
 label.upload input{display:none}
 .preview{
@@ -190,21 +192,17 @@ label.upload input{display:none}
   <div class="panel">
     <div class="header">
       <h1>الأستاذة أسماء عبد الله مهدي</h1>
-      <p>منصة تعليمية متخصصة في شرح الرياضيات خطوة بخطوة، بأسلوب واضح واحترافي.</p>
+      <p>منصة تعليمية متخصصة في شرح الرياضيات خطوة بخطوة بأسلوب احترافي.</p>
     </div>
     <div class="side">
       <div class="note">
         <h3>طريقة التواصل</h3>
         <p>
-          • اكتب سؤالك بوضوح في خانة الدردشة.<br>
-          • يمكنك استخدام الرموز الرياضية و LaTeX.<br>
-          • في حال وجود تمرين مصوَّر يمكنك رفع الصورة.<br>
-          • يتم الرد بشرح مفصل خطوة بخطوة.
+          • اكتب التمرين بوضوح.<br>
+          • يمكنك استعمال الرموز الرياضية و LaTeX.<br>
+          • أرسل تمرينًا واحدًا في كل مرة.<br>
+          • ستحصل على شرح مفصل خطوة بخطوة.
         </p>
-      </div>
-      <div class="note">
-        <h3>تنبيه</h3>
-        <p>هذه المنصة مخصصة للرياضيات فقط لضمان جودة الشرح ودقته.</p>
       </div>
     </div>
   </div>
@@ -215,12 +213,17 @@ label.upload input{display:none}
 
     <div class="composer">
       <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا..."></textarea>
-      <div class="controls">
-        <label class="upload">
-          📎 صورة تمرين
+
+      <div class="actions">
+        <button id="send">إرسال</button>
+
+        <label class="upload secondary">
+          ➕ إضافة تمرين (صورة)
           <input type="file" id="imageInput" accept="image/*">
         </label>
-        <button id="send">إرسال</button>
+
+        <button id="clear" class="secondary">🧹 مسح المحادثة</button>
+
         <div class="preview" id="preview"></div>
       </div>
     </div>
@@ -234,6 +237,7 @@ const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
 const sendBtn = document.getElementById("send");
+const clearBtn = document.getElementById("clear");
 const imgInput = document.getElementById("imageInput");
 const preview = document.getElementById("preview");
 
@@ -252,6 +256,7 @@ function add(role,text){
   chat.scrollTop=chat.scrollHeight;
   if(window.MathJax) MathJax.typesetPromise([msg]).catch(()=>{});
 }
+
 let typingEl=null;
 function showTyping(){
   typingEl=document.createElement("div");
@@ -266,7 +271,7 @@ function hideTyping(){
 
 imgInput.onchange=()=>{
   if(imgInput.files[0]){
-    preview.textContent = "تم اختيار صورة تمرين (سيتم تحليلها قريبًا).";
+    preview.textContent = "تم اختيار صورة تمرين (سيتم تحليلها لاحقًا).";
   }
 };
 
@@ -298,6 +303,10 @@ async function send(){
 }
 
 sendBtn.onclick=send;
+clearBtn.onclick=()=>{
+  chat.innerHTML="";
+  add("bot","تم مسح المحادثة. يمكنك البدء بتمرين جديد.");
+};
 input.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&!e.shiftKey){
     e.preventDefault();
@@ -305,7 +314,7 @@ input.addEventListener("keydown",e=>{
   }
 });
 
-add("bot","مرحبًا بك، تفضل بطرح سؤالك في الرياضيات.");
+add("bot","مرحبًا بك، تفضل بطرح تمرينك في الرياضيات.");
 </script>
 </body>
 </html>

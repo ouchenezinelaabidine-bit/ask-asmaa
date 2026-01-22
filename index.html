@@ -5,12 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>اسأل الأستاذة أسماء</title>
 
-<!-- Font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- MathJax -->
 <script>
 window.MathJax = {
   tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -24,14 +22,12 @@ window.MathJax = {
   --bg0:#050c18;
   --bg1:#071426;
   --panel:#0b1f3a;
-  --panel2:#0f2a52;
   --line:rgba(255,255,255,.09);
   --text:#eaf2ff;
   --muted:#a2b4d8;
   --accent:#4da3ff;
   --accent2:#76c3ff;
   --meGrad: linear-gradient(135deg, #1e90ff, #4da3ff);
-  --botBg:#122b52;
   --shadow: 0 28px 90px rgba(0,0,0,.55);
   --shadow2: 0 12px 35px rgba(0,0,0,.35);
   --r:18px;
@@ -156,18 +152,6 @@ body{
 .hTitle{margin:0;font-weight:900;font-size:16px}
 .hSub{margin:0;color:rgba(234,242,255,.72);font-size:12.5px}
 
-.headerBtns{display:flex;gap:8px;align-items:center}
-.iconBtn{
-  border:1px solid var(--line);
-  background: rgba(255,255,255,.06);
-  color:#eaf2ff;
-  padding:10px 12px;
-  border-radius:999px;
-  cursor:pointer;
-  font-weight:900;
-}
-.iconBtn.danger{ border-color: rgba(255,77,90,.35); }
-
 .chat{
   flex:1;
   padding:16px 14px;
@@ -202,16 +186,6 @@ body{
   gap:8px;
   align-items:center;
 }
-
-.imgBubble{
-  display:block;
-  max-width: 260px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.10);
-  overflow:hidden;
-  box-shadow: 0 10px 24px rgba(0,0,0,.22);
-}
-.imgBubble img{width:100%;height:auto;display:block}
 
 .typingBubble{
   max-width: 70%;
@@ -299,9 +273,6 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
   box-shadow:none;
 }
 
-.fileLabel{display:block;text-align:center;user-select:none}
-.fileLabel input{display:none}
-
 .preview{
   margin-top:8px;
   font-size:12.5px;
@@ -371,7 +342,7 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
       <div class="card">
         <h3 id="noteTitle">ملاحظة</h3>
         <p id="noteText">
-          رفع صورة التمرين يظهر داخل المحادثة كمعاينة. حل الصورة يحتاج تفعيل لاحق داخل الـ Worker.
+          اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.
         </p>
       </div>
     </div>
@@ -386,10 +357,6 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
           <p class="hSub" id="mainSub">اكتب سؤالك وسأشرحه خطوة بخطوة</p>
         </div>
       </div>
-
-      <div class="headerBtns">
-        <button class="iconBtn danger" id="clearBtn" type="button">مسح</button>
-      </div>
     </div>
 
     <div id="chat" class="chat"></div>
@@ -400,19 +367,16 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
           <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا..."></textarea>
         </div>
 
+        <!-- ✅ الآن زر الإرسال وفوقه لا شيء، وتحته زر المسح -->
         <div class="actionsCol">
           <button class="btn" id="sendBtn" type="button">إرسال</button>
-
-          <label class="btn secondary fileLabel" id="uploadLabel">
-            رفع صورة التمرين
-            <input id="imageInput" type="file" accept="image/*">
-          </label>
+          <button class="btn secondary" id="clearBtn" type="button">مسح المحادثة</button>
         </div>
       </div>
 
       <div class="preview">
-        <span id="imgStatus"></span>
         <span id="statusText"></span>
+        <span></span>
       </div>
 
       <div class="kbdHint" id="kbdHint">
@@ -430,8 +394,6 @@ const chat = document.getElementById("chat");
 const input = document.getElementById("input");
 const sendBtn = document.getElementById("sendBtn");
 const clearBtn = document.getElementById("clearBtn");
-const imgInput = document.getElementById("imageInput");
-const imgStatus = document.getElementById("imgStatus");
 const statusText = document.getElementById("statusText");
 
 const btnAr = document.getElementById("btnAr");
@@ -449,17 +411,15 @@ const I18N = {
 • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.`,
     langTitle: "اختيار اللغة",
     noteTitle: "ملاحظة",
-    noteText: "رفع صورة التمرين يظهر داخل المحادثة كمعاينة. حل الصورة يحتاج تفعيل لاحق داخل الـ Worker.",
+    noteText: "اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.",
     mainTitle: "جلسة الرياضيات",
     mainSub: "اكتب سؤالك وسأشرحه خطوة بخطوة",
-    clear: "مسح",
+    clear: "مسح المحادثة",
     send: "إرسال",
-    upload: "رفع صورة التمرين",
     placeholder: "اكتب سؤالك في الرياضيات هنا...",
     greeting: "أهلًا بك! اكتب سؤالك في الرياضيات وسأشرحه خطوة بخطوة.",
     cleared: "تم مسح المحادثة. ابدأ تمرينًا جديدًا.",
     preparing: "الأستاذة أسماء تُحضّر الإجابة",
-    imgPicked: "تم اختيار صورة",
     busy: "جاري الإرسال..."
   },
   en: {
@@ -473,17 +433,15 @@ const I18N = {
 • Send one exercise at a time for best accuracy.`,
     langTitle: "Language",
     noteTitle: "Note",
-    noteText: "The image is shown in chat as a preview. Solving the image requires enabling it in the Worker later.",
+    noteText: "Type your question directly, or tap an example to send it quickly.",
     mainTitle: "Math Session",
     mainSub: "Type your question and get a step-by-step solution",
-    clear: "Clear",
+    clear: "Clear chat",
     send: "Send",
-    upload: "Upload exercise image",
     placeholder: "Type your math question here...",
     greeting: "Welcome! Type your math question and I’ll explain it step by step.",
     cleared: "Chat cleared. Start a new exercise.",
     preparing: "Ms. Asmaa is preparing the answer",
-    imgPicked: "Image selected",
     busy: "Sending..."
   }
 };
@@ -494,9 +452,7 @@ function nowTime(){
   const d = new Date();
   return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
-function scrollToBottom(){
-  chat.scrollTop = chat.scrollHeight;
-}
+function scrollToBottom(){ chat.scrollTop = chat.scrollHeight; }
 
 function addMsg(role, text){
   const row = document.createElement("div");
@@ -523,39 +479,6 @@ function addMsg(role, text){
   }
 }
 
-/* ✅ show image inside chat (preview) */
-function addImageToChat(file){
-  const row = document.createElement("div");
-  row.className = "row me";
-
-  const wrap = document.createElement("div");
-
-  const imgBox = document.createElement("div");
-  imgBox.className = "imgBubble";
-
-  const img = document.createElement("img");
-  img.alt = "Exercise image";
-
-  const url = URL.createObjectURL(file);
-  img.src = url;
-
-  imgBox.appendChild(img);
-  wrap.appendChild(imgBox);
-
-  const meta = document.createElement("div");
-  meta.className = "meta";
-  meta.innerHTML = `<span>${lang==="ar"?"أنت":"You"}</span> • <span>${nowTime()}</span>`;
-  wrap.appendChild(meta);
-
-  row.appendChild(wrap);
-  chat.appendChild(row);
-  scrollToBottom();
-
-  // You can revoke later if you want:
-  // setTimeout(()=>URL.revokeObjectURL(url), 60000);
-}
-
-/* Typing bubble */
 let typingRow = null;
 function showTyping(){
   if(typingRow) return;
@@ -622,7 +545,6 @@ async function send(){
   }
 }
 
-/* Language */
 function applyLang(next){
   lang = next;
   const t = I18N[lang];
@@ -634,49 +556,26 @@ function applyLang(next){
   document.getElementById("langTitle").textContent = t.langTitle;
   document.getElementById("noteTitle").textContent = t.noteTitle;
   document.getElementById("noteText").textContent = t.noteText;
+
   document.getElementById("mainTitle").textContent = t.mainTitle;
   document.getElementById("mainSub").textContent = t.mainSub;
 
   clearBtn.textContent = t.clear;
   sendBtn.textContent = t.send;
-  document.getElementById("uploadLabel").childNodes[0].textContent = t.upload + " ";
-
   input.placeholder = t.placeholder;
 
   btnAr.classList.toggle("active", lang==="ar");
   btnEn.classList.toggle("active", lang==="en");
 }
 
-/* ✅ FIX: language buttons click handlers */
 btnAr.addEventListener("click", ()=>applyLang("ar"));
 btnEn.addEventListener("click", ()=>applyLang("en"));
 
-/* Image pick: show preview + bubble in chat */
-imgInput.addEventListener("change", ()=>{
-  const f = imgInput.files && imgInput.files[0];
-  if(!f){
-    imgStatus.textContent = "";
-    return;
-  }
-  imgStatus.innerHTML = `📷 <b>${I18N[lang].imgPicked}</b>: ${f.name}`;
-
-  // show image preview bubble in chat
-  addImageToChat(f);
-
-  // optional: add a note message to user
-  addMsg("bot", lang==="ar"
-    ? "وصلتني الصورة كمعاينة داخل المحادثة. لحل الصورة تلقائيًا نحتاج تفعيل ذلك داخل الـ Worker."
-    : "Image received as a preview in chat. To solve the image automatically, we need to enable it in the Worker."
-  );
-});
-
-/* Clear */
 clearBtn.addEventListener("click", ()=>{
   chat.innerHTML = "";
   addMsg("bot", I18N[lang].cleared);
 });
 
-/* Pills */
 document.getElementById("pills").addEventListener("click", (e)=>{
   const pill = e.target.closest(".pill");
   if(!pill) return;
@@ -685,7 +584,6 @@ document.getElementById("pills").addEventListener("click", (e)=>{
   autoResize();
 });
 
-/* Send */
 sendBtn.addEventListener("click", send);
 input.addEventListener("keydown", (e)=>{
   if(e.key === "Enter" && !e.shiftKey){
@@ -694,7 +592,6 @@ input.addEventListener("keydown", (e)=>{
   }
 });
 
-/* Autosize */
 function autoResize(){
   input.style.height = "auto";
   input.style.height = Math.min(input.scrollHeight, 140) + "px";
@@ -702,7 +599,6 @@ function autoResize(){
 input.addEventListener("input", autoResize);
 autoResize();
 
-/* Init */
 applyLang("ar");
 addMsg("bot", I18N[lang].greeting);
 </script>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>الأستاذة أسماء عبد الله مهدي | منصة الرياضيات</title>
 
+<!-- MathJax -->
 <script>
 window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
 </script>
@@ -12,14 +13,15 @@ window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
 
 <style>
 :root{
-  --bg:#071426;
+  --bg:#061225;
   --panel:#0b1f3a;
   --panel2:#0f2a52;
   --line:rgba(255,255,255,.08);
   --text:#eaf2ff;
   --muted:#9fb3d9;
   --accent:#4da3ff;
-  --me:#4da3ff;
+  --whatsapp:#25d366;
+  --facebook:#1877f2;
   --bot:#132c52;
 }
 *{box-sizing:border-box}
@@ -32,81 +34,105 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  padding:16px;
 }
 .app{
-  width:min(1200px,100%);
+  width:100%;
+  max-width:1200px;
+  height:100vh;
+  max-height:860px;
   display:grid;
   grid-template-columns: 360px 1fr;
-  gap:16px;
 }
 @media(max-width:900px){
-  .app{grid-template-columns:1fr}
+  .app{
+    grid-template-columns:1fr;
+    grid-template-rows:auto 1fr;
+    height:100vh;
+  }
 }
-.panel{
+
+/* Sidebar */
+.sidebar{
   background:var(--panel);
-  border-radius:18px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
-  overflow:hidden;
-}
-.header{
+  border-left:1px solid var(--line);
   padding:18px;
-  border-bottom:1px solid var(--line);
 }
-.header h1{
+.sidebar h1{
   margin:0;
   font-size:20px;
   font-weight:800;
 }
-.header p{
-  margin:6px 0 0;
+.sidebar p{
+  margin:8px 0 16px;
   font-size:13px;
   color:var(--muted);
-  line-height:1.6;
+  line-height:1.7;
 }
-.side{
-  padding:18px;
-}
-.note{
+.card{
   background:var(--panel2);
   border:1px solid var(--line);
-  border-radius:14px;
+  border-radius:16px;
   padding:14px;
   margin-bottom:14px;
 }
-.note h3{
+.card h3{
   margin:0 0 8px;
   font-size:15px;
 }
-.note p{
+.card p{
   margin:0;
   font-size:13px;
   color:var(--muted);
   line-height:1.7;
 }
+.lang{
+  display:flex;
+  gap:8px;
+}
+.lang button{
+  flex:1;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  padding:8px;
+  cursor:pointer;
+}
+.lang button.active{
+  background:var(--accent);
+  color:#041225;
+}
+
+/* Chat */
 .chatWrap{
+  background:var(--bg);
   display:flex;
   flex-direction:column;
-  height:100%;
+}
+.chatHeader{
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  font-weight:800;
 }
 .chat{
   flex:1;
-  padding:18px;
+  padding:16px;
   overflow:auto;
   display:flex;
   flex-direction:column;
   gap:14px;
 }
 .msg{
-  max-width:75%;
+  max-width:80%;
   padding:12px 14px;
-  border-radius:16px;
+  border-radius:18px;
   line-height:1.7;
   white-space:pre-wrap;
+  box-shadow:0 6px 20px rgba(0,0,0,.25);
 }
 .me{
   align-self:flex-start;
-  background:linear-gradient(135deg,#4da3ff,#6bb7ff);
+  background:linear-gradient(135deg,var(--facebook),#4da3ff);
   color:#041225;
 }
 .bot{
@@ -123,15 +149,13 @@ body{
   align-self:flex-end;
   font-size:13px;
   color:var(--muted);
-  display:flex;
-  align-items:center;
-  gap:8px;
 }
 .dots span{
+  display:inline-block;
   width:6px;height:6px;
   background:var(--accent);
   border-radius:50%;
-  display:inline-block;
+  margin:0 1px;
   animation:blink 1.4s infinite both;
 }
 .dots span:nth-child(2){animation-delay:.2s}
@@ -140,91 +164,85 @@ body{
   0%,80%,100%{opacity:.2}
   40%{opacity:1}
 }
+
+/* Composer */
 .composer{
+  padding:12px;
   border-top:1px solid var(--line);
-  padding:14px;
+  display:flex;
+  gap:10px;
+  align-items:center;
 }
 textarea{
-  width:100%;
-  min-height:52px;
-  max-height:140px;
+  flex:1;
   resize:none;
-  border-radius:14px;
+  min-height:46px;
+  max-height:120px;
+  border-radius:999px;
   border:1px solid var(--line);
-  background:#061225;
+  background:#041225;
   color:var(--text);
-  padding:12px;
+  padding:12px 16px;
   font-size:15px;
-  margin-bottom:10px;
 }
 .actions{
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:6px;
 }
-button,label.upload{
+.btn{
   border:0;
-  border-radius:12px;
+  border-radius:999px;
   padding:10px 14px;
   font-weight:800;
   cursor:pointer;
-  background:linear-gradient(135deg,#4da3ff,#6bb7ff);
-  color:#041225;
-  text-align:center;
+  color:#fff;
 }
-.secondary{
-  background:transparent;
-  color:var(--text);
-  border:1px solid var(--line);
-}
-label.upload input{display:none}
-.preview{
-  font-size:12px;
-  color:var(--muted);
-}
+.send{ background:var(--whatsapp); }
+.clear{ background:#ef4444; }
+.upload{ background:var(--facebook); }
+.btn:disabled{opacity:.5}
 </style>
 </head>
 
 <body>
 <div class="app">
 
-  <!-- الجانب الأيسر -->
-  <div class="panel">
-    <div class="header">
-      <h1>الأستاذة أسماء عبد الله مهدي</h1>
-      <p>منصة تعليمية متخصصة في شرح الرياضيات خطوة بخطوة بأسلوب احترافي.</p>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h1>الأستاذة أسماء عبد الله مهدي</h1>
+    <p>منصة تعليمية متخصصة في شرح الرياضيات بأسلوب واضح واحترافي.</p>
+
+    <div class="card">
+      <h3>طريقة التواصل</h3>
+      <p>
+        • اكتب التمرين بوضوح<br>
+        • استخدم الرموز الرياضية<br>
+        • يمكنك رفع صورة تمرين<br>
+        • الرد يكون خطوة بخطوة
+      </p>
     </div>
-    <div class="side">
-      <div class="note">
-        <h3>طريقة التواصل</h3>
-        <p>
-          • اكتب التمرين بوضوح.<br>
-          • يمكنك استعمال الرموز الرياضية و LaTeX.<br>
-          • أرسل تمرينًا واحدًا في كل مرة.<br>
-          • ستحصل على شرح مفصل خطوة بخطوة.
-        </p>
+
+    <div class="card">
+      <h3>اللغة</h3>
+      <div class="lang">
+        <button class="active" onclick="setLang('ar')">العربية</button>
+        <button onclick="setLang('en')">English</button>
       </div>
     </div>
   </div>
 
-  <!-- الدردشة -->
-  <div class="panel chatWrap">
-    <div class="chat" id="chat"></div>
+  <!-- Chat -->
+  <div class="chatWrap">
+    <div class="chatHeader">جلسة الرياضيات</div>
+    <div id="chat" class="chat"></div>
 
     <div class="composer">
-      <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا..."></textarea>
-
+      <textarea id="input" placeholder="اكتب سؤالك في الرياضيات..."></textarea>
       <div class="actions">
-        <button id="send">إرسال</button>
-
-        <label class="upload secondary">
-          ➕ إضافة تمرين (صورة)
-          <input type="file" id="imageInput" accept="image/*">
-        </label>
-
-        <button id="clear" class="secondary">🧹 مسح المحادثة</button>
-
-        <div class="preview" id="preview"></div>
+        <button class="btn send" id="send">إرسال</button>
+        <button class="btn upload">➕ تمرين</button>
+        <button class="btn clear" id="clear">مسح</button>
       </div>
     </div>
   </div>
@@ -232,48 +250,34 @@ label.upload input{display:none}
 </div>
 
 <script>
-const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
+const WORKER_URL="https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
+const chat=document.getElementById("chat");
+const input=document.getElementById("input");
+const sendBtn=document.getElementById("send");
+const clearBtn=document.getElementById("clear");
 
-const chat = document.getElementById("chat");
-const input = document.getElementById("input");
-const sendBtn = document.getElementById("send");
-const clearBtn = document.getElementById("clear");
-const imgInput = document.getElementById("imageInput");
-const preview = document.getElementById("preview");
-
-function time(){
-  return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-}
 function add(role,text){
-  const msg=document.createElement("div");
-  msg.className="msg "+role;
-  msg.textContent=text;
-  chat.appendChild(msg);
+  const m=document.createElement("div");
+  m.className="msg "+role;
+  m.textContent=text;
+  chat.appendChild(m);
   const meta=document.createElement("div");
   meta.className="meta";
-  meta.textContent=time();
+  meta.textContent=new Date().toLocaleTimeString();
   chat.appendChild(meta);
   chat.scrollTop=chat.scrollHeight;
-  if(window.MathJax) MathJax.typesetPromise([msg]).catch(()=>{});
+  if(window.MathJax) MathJax.typesetPromise([m]).catch(()=>{});
 }
 
-let typingEl=null;
+let typing;
 function showTyping(){
-  typingEl=document.createElement("div");
-  typingEl.className="typing";
-  typingEl.innerHTML=`الأستاذة أسماء تُحضّر الإجابة <span class="dots"><span></span><span></span><span></span></span>`;
-  chat.appendChild(typingEl);
+  typing=document.createElement("div");
+  typing.className="typing";
+  typing.innerHTML='الأستاذة أسماء تُحضّر الإجابة <span class="dots"><span></span><span></span><span></span></span>';
+  chat.appendChild(typing);
   chat.scrollTop=chat.scrollHeight;
 }
-function hideTyping(){
-  if(typingEl){typingEl.remove(); typingEl=null;}
-}
-
-imgInput.onchange=()=>{
-  if(imgInput.files[0]){
-    preview.textContent = "تم اختيار صورة تمرين (سيتم تحليلها لاحقًا).";
-  }
-};
+function hideTyping(){ if(typing) typing.remove(); }
 
 async function send(){
   const q=input.value.trim();
@@ -282,39 +286,35 @@ async function send(){
   input.value="";
   sendBtn.disabled=true;
   showTyping();
-
   try{
-    const res=await fetch(WORKER_URL,{
+    const r=await fetch(WORKER_URL,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({message:q})
     });
-    const raw=await res.text();
-    let data;
-    try{data=JSON.parse(raw)}catch{data={answer:raw}};
+    const raw=await r.text();
+    let d; try{d=JSON.parse(raw)}catch{d={answer:raw}};
     hideTyping();
-    add("bot",(data.answer||"").trim()||"لا يوجد رد واضح.");
+    add("bot",(d.answer||"").trim()||"لا يوجد رد.");
   }catch{
     hideTyping();
-    add("bot","تعذر الاتصال بالخادم.");
+    add("bot","تعذر الاتصال.");
   }finally{
     sendBtn.disabled=false;
   }
 }
-
 sendBtn.onclick=send;
-clearBtn.onclick=()=>{
-  chat.innerHTML="";
-  add("bot","تم مسح المحادثة. يمكنك البدء بتمرين جديد.");
-};
+clearBtn.onclick=()=>{ chat.innerHTML=""; add("bot","ابدأ تمرينًا جديدًا."); };
 input.addEventListener("keydown",e=>{
-  if(e.key==="Enter"&&!e.shiftKey){
-    e.preventDefault();
-    send();
-  }
+  if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send(); }
 });
 
-add("bot","مرحبًا بك، تفضل بطرح تمرينك في الرياضيات.");
+function setLang(l){
+  document.querySelectorAll(".lang button").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+}
+
+add("bot","مرحبًا بك في منصة الرياضيات، تفضل بطرح سؤالك.");
 </script>
 </body>
 </html>

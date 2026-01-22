@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+<!-- MathJax -->
 <script>
 window.MathJax = {
   tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -28,6 +29,7 @@ window.MathJax = {
   --accent:#4da3ff;
   --accent2:#76c3ff;
   --meGrad: linear-gradient(135deg, #1e90ff, #4da3ff);
+  --botBg: linear-gradient(135deg, rgba(18,43,82,.95), rgba(18,43,82,.75));
   --shadow: 0 28px 90px rgba(0,0,0,.55);
   --shadow2: 0 12px 35px rgba(0,0,0,.35);
   --r:18px;
@@ -58,6 +60,7 @@ body{
   .app{ grid-template-columns: 1fr; }
 }
 
+/* side */
 .side{
   background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
   border:1px solid var(--line);
@@ -123,6 +126,7 @@ body{
   border-color: rgba(77,163,255,.35);
 }
 
+/* chat panel */
 .chatPanel{
   background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
   border:1px solid var(--line);
@@ -152,6 +156,7 @@ body{
 .hTitle{margin:0;font-weight:900;font-size:16px}
 .hSub{margin:0;color:rgba(234,242,255,.72);font-size:12.5px}
 
+/* ✅ chat scroll + smooth */
 .chat{
   flex:1;
   padding:16px 14px;
@@ -159,8 +164,11 @@ body{
   display:flex;
   flex-direction:column;
   gap:12px;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling: touch; /* iOS Safari */
 }
 
+/* messages */
 .row{ display:flex; gap:10px; }
 .row.me{ justify-content:flex-start; }
 .row.bot{ justify-content:flex-end; }
@@ -176,7 +184,7 @@ body{
   box-shadow: 0 10px 24px rgba(0,0,0,.22);
 }
 .me .bubble{ background: var(--meGrad); color:#041225; border-color: rgba(77,163,255,.35); }
-.bot .bubble{ background: linear-gradient(135deg, rgba(18,43,82,.95), rgba(18,43,82,.75)); }
+.bot .bubble{ background: var(--botBg); }
 
 .meta{
   font-size:12px;
@@ -187,6 +195,7 @@ body{
   align-items:center;
 }
 
+/* typing */
 .typingBubble{
   max-width: 70%;
   padding:12px 12px;
@@ -216,6 +225,7 @@ body{
   50%{opacity:1; transform: translateY(-2px);}
 }
 
+/* composer */
 .composer{
   padding:12px 12px 14px;
   border-top:1px solid var(--line);
@@ -253,7 +263,6 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 @media(max-width: 520px){
   .actionsCol{ min-width: 130px; }
 }
-
 .btn{
   border:none;
   cursor:pointer;
@@ -265,7 +274,6 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
   box-shadow: 0 16px 35px rgba(77,163,255,.18);
 }
 .btn:disabled{ opacity:.55; cursor:not-allowed; }
-
 .btn.secondary{
   background: rgba(255,255,255,.06);
   color: var(--text);
@@ -296,6 +304,35 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
   font-size:11px;
   margin-inline:3px;
 }
+
+/* ✅ Scroll-to-top floating button */
+.toTop{
+  position:absolute;
+  left:14px; /* RTL: left is fine */
+  bottom:92px;
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background: rgba(0,0,0,.35);
+  color: var(--text);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow: 0 16px 35px rgba(0,0,0,.35);
+  opacity:0;
+  pointer-events:none;
+  transform: translateY(8px);
+  transition: opacity .2s ease, transform .2s ease, background .15s ease;
+  z-index:5;
+}
+.toTop:hover{ background: rgba(255,255,255,.06); }
+.toTop.show{
+  opacity:1;
+  pointer-events:auto;
+  transform: translateY(0);
+}
+.toTop span{ font-size:18px; font-weight:900; line-height:1; }
 </style>
 </head>
 
@@ -341,14 +378,12 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 
       <div class="card">
         <h3 id="noteTitle">ملاحظة</h3>
-        <p id="noteText">
-          اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.
-        </p>
+        <p id="noteText">اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.</p>
       </div>
     </div>
   </aside>
 
-  <main class="chatPanel">
+  <main class="chatPanel" style="position:relative">
     <div class="chatHeader">
       <div class="chatHeaderLeft">
         <div class="logo">∑</div>
@@ -361,13 +396,17 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 
     <div id="chat" class="chat"></div>
 
+    <!-- ✅ زر الرجوع للأعلى -->
+    <button id="toTop" class="toTop" type="button" aria-label="الرجوع للأعلى">
+      <span>↑</span>
+    </button>
+
     <div class="composer">
       <div class="composerRow">
         <div class="inputWrap">
           <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا..."></textarea>
         </div>
 
-        <!-- ✅ الآن زر الإرسال وفوقه لا شيء، وتحته زر المسح -->
         <div class="actionsCol">
           <button class="btn" id="sendBtn" type="button">إرسال</button>
           <button class="btn secondary" id="clearBtn" type="button">مسح المحادثة</button>
@@ -388,6 +427,7 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 </div>
 
 <script>
+/* ✅ ضع رابط الـ Worker هنا */
 const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
 
 const chat = document.getElementById("chat");
@@ -398,6 +438,8 @@ const statusText = document.getElementById("statusText");
 
 const btnAr = document.getElementById("btnAr");
 const btnEn = document.getElementById("btnEn");
+
+const toTopBtn = document.getElementById("toTop");
 
 const I18N = {
   ar: {
@@ -472,13 +514,17 @@ function addMsg(role, text){
 
   row.appendChild(wrap);
   chat.appendChild(row);
-  scrollToBottom();
 
   if (window.MathJax && window.MathJax.typesetPromise) {
     window.MathJax.typesetPromise([bubble]).catch(()=>{});
   }
+
+  // Always keep latest visible unless user scrolled up a lot
+  const nearBottom = (chat.scrollHeight - chat.scrollTop - chat.clientHeight) < 180;
+  if (nearBottom) scrollToBottom();
 }
 
+/* typing bubble */
 let typingRow = null;
 function showTyping(){
   if(typingRow) return;
@@ -545,6 +591,7 @@ async function send(){
   }
 }
 
+/* language */
 function applyLang(next){
   lang = next;
   const t = I18N[lang];
@@ -571,11 +618,7 @@ function applyLang(next){
 btnAr.addEventListener("click", ()=>applyLang("ar"));
 btnEn.addEventListener("click", ()=>applyLang("en"));
 
-clearBtn.addEventListener("click", ()=>{
-  chat.innerHTML = "";
-  addMsg("bot", I18N[lang].cleared);
-});
-
+/* examples */
 document.getElementById("pills").addEventListener("click", (e)=>{
   const pill = e.target.closest(".pill");
   if(!pill) return;
@@ -584,6 +627,13 @@ document.getElementById("pills").addEventListener("click", (e)=>{
   autoResize();
 });
 
+/* clear */
+clearBtn.addEventListener("click", ()=>{
+  chat.innerHTML = "";
+  addMsg("bot", I18N[lang].cleared);
+});
+
+/* send */
 sendBtn.addEventListener("click", send);
 input.addEventListener("keydown", (e)=>{
   if(e.key === "Enter" && !e.shiftKey){
@@ -592,6 +642,7 @@ input.addEventListener("keydown", (e)=>{
   }
 });
 
+/* autosize */
 function autoResize(){
   input.style.height = "auto";
   input.style.height = Math.min(input.scrollHeight, 140) + "px";
@@ -599,8 +650,21 @@ function autoResize(){
 input.addEventListener("input", autoResize);
 autoResize();
 
+/* ✅ Scroll-to-top behavior */
+function updateToTop(){
+  const scrolled = chat.scrollTop > 280; // show after user scrolls down
+  toTopBtn.classList.toggle("show", scrolled);
+}
+chat.addEventListener("scroll", updateToTop, { passive:true });
+toTopBtn.addEventListener("click", ()=>{
+  chat.scrollTo({ top: 0, behavior: "smooth" });
+});
+updateToTop();
+
+/* init */
 applyLang("ar");
 addMsg("bot", I18N[lang].greeting);
 </script>
+
 </body>
 </html>

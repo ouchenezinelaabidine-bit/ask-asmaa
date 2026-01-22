@@ -1,314 +1,152 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>اسأل الأستاذة أسماء | Math only helper</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اسأل الأستاذة أسماء | Math Helper</title>
 
-  <!-- MathJax (اختياري) -->
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
-    };
-  </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
-  <style>
-    :root{
-      --bg:#0b1220; --card:#0f1a33; --muted:#a7b3d1; --text:#eef2ff;
-      --line:rgba(255,255,255,.10);
-      --accent:#6ee7ff; --accent2:#a78bfa;
-      --bubbleUser: rgba(110,231,255,.14);
-      --bubbleBot: rgba(167,139,250,.14);
-      --shadow: 0 18px 50px rgba(0,0,0,.35);
-      font-synthesis-weight: none;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1200px 600px at 20% 10%, rgba(110,231,255,.18), transparent 60%),
-                  radial-gradient(1000px 500px at 80% 20%, rgba(167,139,250,.16), transparent 60%),
-                  var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex; justify-content:center; align-items:center;
-      padding:18px;
-    }
-    .app{
-      width:min(1100px, 100%);
-      display:grid;
-      grid-template-columns: 1.3fr .9fr;
-      gap:14px;
-    }
-    @media (max-width: 920px){
-      .app{ grid-template-columns: 1fr; }
-    }
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .header{
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-    }
-    .title{
-      display:flex; align-items:center; gap:10px;
-      font-weight:800;
-    }
-    .badge{
-      font-size:12px; color:var(--muted);
-      border:1px solid var(--line);
-      padding:4px 8px; border-radius:999px;
-      background: rgba(255,255,255,.03);
-    }
-    .content{ padding:14px; }
-
-    .chat{
-      height: 520px;
-      overflow:auto;
-      padding: 14px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .row{ display:flex; }
-    .row.user{ justify-content:flex-start; }
-    .row.bot{ justify-content:flex-start; }
-    .bubble{
-      max-width: 85%;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:10px 12px;
-      line-height:1.6;
-      background: rgba(255,255,255,.03);
-      white-space:pre-wrap;
-    }
-    .user .bubble{ background: var(--bubbleUser); }
-    .bot .bubble{ background: var(--bubbleBot); }
-    .meta{
-      font-size:12px; color:var(--muted);
-      margin-top:6px;
-      opacity:.95;
-    }
-
-    .composer{
-      display:flex;
-      gap:10px;
-      padding: 12px 14px;
-      border-top:1px solid var(--line);
-      align-items:center;
-    }
-    textarea{
-      flex:1;
-      resize:none;
-      height:54px;
-      padding:12px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.25);
-      color: var(--text);
-      outline:none;
-      font-size:15px;
-    }
-    button{
-      border:0;
-      cursor:pointer;
-      padding: 12px 16px;
-      border-radius:14px;
-      color:#071018;
-      font-weight:800;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      min-width:96px;
-      box-shadow: 0 12px 25px rgba(110,231,255,.12);
-    }
-    button:disabled{ opacity:.5; cursor:not-allowed; }
-
-    .side .content{ padding:14px 14px 18px; }
-    .hint{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px;
-      background: rgba(255,255,255,.03);
-      margin-bottom:12px;
-    }
-    .hint h3{ margin:0 0 8px; font-size:15px;}
-    .hint p{ margin:0; color:var(--muted); line-height:1.7; font-size:13px;}
-    .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
-    .chip{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:13px;
-      color:var(--text);
-      cursor:pointer;
-      user-select:none;
-    }
-    .status{
-      display:flex; align-items:center; gap:8px;
-      font-size:13px; color:var(--muted);
-    }
-    .dot{ width:9px; height:9px; border-radius:999px; background:#34d399; box-shadow:0 0 0 3px rgba(52,211,153,.15); }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:system-ui,Arial;
+  background:#0b1220;
+  color:#eef2ff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+.app{
+  width:min(900px,100%);
+  background:#0f1a33;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  overflow:hidden;
+}
+.header{
+  padding:14px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  font-weight:800;
+}
+.chat{
+  height:420px;
+  overflow:auto;
+  padding:14px;
+}
+.row{margin-bottom:12px}
+.user .bubble{background:rgba(110,231,255,.18)}
+.bot .bubble{background:rgba(167,139,250,.18)}
+.bubble{
+  padding:10px 12px;
+  border-radius:14px;
+  line-height:1.6;
+}
+.meta{
+  font-size:12px;
+  color:#a7b3d1;
+  margin-top:4px;
+}
+.composer{
+  display:flex;
+  gap:10px;
+  padding:12px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+textarea{
+  flex:1;
+  resize:none;
+  height:50px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);
+  background:#0b1220;
+  color:#fff;
+  padding:10px;
+}
+button{
+  border:0;
+  border-radius:12px;
+  padding:10px 16px;
+  font-weight:800;
+  cursor:pointer;
+  background:linear-gradient(135deg,#6ee7ff,#a78bfa);
+}
+button:disabled{opacity:.5}
+</style>
 </head>
 
 <body>
-  <div class="app">
-    <!-- Chat panel -->
-    <div class="panel">
-      <div class="header">
-        <div class="title">
-          <span style="font-size:18px">جلسة الرياضيات</span>
-          <span class="badge">شرح خطوة بخطوة</span>
-        </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <span class="badge" id="modeBadge">POST فقط</span>
-          <button id="clearBtn" style="min-width:auto; padding:10px 12px; border-radius:12px; color:#0b1220;">مسح المحادثة</button>
-        </div>
-      </div>
-
-      <div id="chat" class="chat"></div>
-
-      <div class="composer">
-        <textarea id="input" placeholder="اكتب سؤالك في الرياضيات هنا... (يمكن استخدام LaTeX مثل: x^2, \\frac{1}{2})"></textarea>
-        <button id="sendBtn">إرسال</button>
-      </div>
-    </div>
-
-    <!-- Side panel -->
-    <div class="panel side">
-      <div class="header">
-        <div class="title">
-          <span style="font-size:18px">اسأل الأستاذة أسماء</span>
-        </div>
-        <div class="status"><span class="dot"></span>جاهزة للإجابة خطوة بخطوة</div>
-      </div>
-
-      <div class="content">
-        <div class="hint">
-          <h3>أمثلة سريعة (اضغط لإرسالها)</h3>
-          <div class="chips" id="chips">
-            <div class="chip">حل المعادلة: 2x + 3 = 11</div>
-            <div class="chip">اشتق: f(x)=x^3 - 5x + 2</div>
-            <div class="chip">بسّط: (x-1)/(x^2-1)</div>
-            <div class="chip">مساحة دائرة (r=7)</div>
-            <div class="chip">نظام: x+y=10 و x-y=2</div>
-          </div>
-        </div>
-
-        <div class="hint">
-          <h3>ملاحظة</h3>
-          <p>• اكتب السؤال بوضوح.<br>• يمكنك استخدام الرموز والـ LaTeX.<br>• إذا كان سؤالك خارج الرياضيات سأعتذر لأن المساعد مخصص للرياضيات فقط.</p>
-        </div>
-
-        <div class="hint">
-          <h3>تشخيص سريع</h3>
-          <p>إذا ظهرت رسالة “تم الاستلام لكن لم يصلني نص…” فهذا يعني أن الخادم لم يرجع <b>answer</b>. مع هذا الكود لن تحدث بإذن الله.</p>
-        </div>
-      </div>
-    </div>
+<div class="app">
+  <div class="header">اسأل الأستاذة أسماء – رياضيات فقط</div>
+  <div id="chat" class="chat"></div>
+  <div class="composer">
+    <textarea id="input" placeholder="اكتب سؤالك في الرياضيات..."></textarea>
+    <button id="sendBtn">إرسال</button>
   </div>
+</div>
 
-  <script>
-    // ✅ ضع رابط الـ Worker الخاص بك هنا:
-    const WORKER_URL = "https://ask-asmaa.ouchene-zinelabidine.workers.dev";
+<script>
+const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
 
-    const chatEl = document.getElementById("chat");
-    const inputEl = document.getElementById("input");
-    const sendBtn = document.getElementById("sendBtn");
-    const clearBtn = document.getElementById("clearBtn");
+const chatEl = document.getElementById("chat");
+const inputEl = document.getElementById("input");
+const sendBtn = document.getElementById("sendBtn");
 
-    function nowTime(){
-      const d = new Date();
-      return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    }
+function addMsg(role,text){
+  const row=document.createElement("div");
+  row.className="row "+role;
+  const b=document.createElement("div");
+  b.className="bubble";
+  b.textContent=text;
+  const m=document.createElement("div");
+  m.className="meta";
+  m.textContent=new Date().toLocaleTimeString();
+  row.appendChild(b);
+  row.appendChild(m);
+  chatEl.appendChild(row);
+  chatEl.scrollTop=chatEl.scrollHeight;
+  if(window.MathJax) MathJax.typesetPromise([b]);
+}
 
-    function addMsg(role, text){
-      const row = document.createElement("div");
-      row.className = "row " + role;
+async function sendMessage(){
+  const msg=inputEl.value.trim();
+  if(!msg) return;
+  addMsg("user",msg);
+  inputEl.value="";
+  sendBtn.disabled=true;
 
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = text;
-
-      const wrap = document.createElement("div");
-      wrap.appendChild(bubble);
-
-      const meta = document.createElement("div");
-      meta.className = "meta";
-      meta.textContent = `${nowTime()} • ${role === "user" ? "أنت" : "الأستاذة أسماء"}`;
-      wrap.appendChild(meta);
-
-      row.appendChild(wrap);
-      chatEl.appendChild(row);
-      chatEl.scrollTop = chatEl.scrollHeight;
-
-      // MathJax typeset if available
-      if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise([bubble]).catch(() => {});
-      }
-    }
-
-    function setBusy(isBusy){
-      sendBtn.disabled = isBusy;
-      inputEl.disabled = isBusy;
-    }
-
-    async function sendMessage(text){
-      const msg = (text || inputEl.value || "").trim();
-      if (!msg) return;
-
-      addMsg("user", msg);
-      inputEl.value = "";
-      setBusy(true);
-
-      try{
-        const res = await fetch(WORKER_URL, {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify({ message: msg })
-        });
-
-        // parse JSON
-        let data = {};
-        try { data = await res.json(); } catch(e){ data = {}; }
-
-        const answer = (data.answer || "").toString().trim();
-        addMsg("bot", answer || "تم الاستلام لكن لم يصلني نص جواب واضح من الخادم.");
-      }catch(err){
-        addMsg("bot", "تعذر الاتصال بالخادم. تحقق من رابط الـ Worker أو الاتصال بالإنترنت.");
-      }finally{
-        setBusy(false);
-      }
-    }
-
-    sendBtn.addEventListener("click", () => sendMessage());
-    inputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
+  try{
+    const res=await fetch(WORKER_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:msg})
     });
+    const raw=await res.text();
+    let data;
+    try{data=JSON.parse(raw)}catch{data={answer:raw}}
+    addMsg("bot",(data.answer||"").trim()||"لا يوجد رد واضح.");
+  }catch{
+    addMsg("bot","تعذر الاتصال بالخادم.");
+  }finally{
+    sendBtn.disabled=false;
+  }
+}
 
-    clearBtn.addEventListener("click", () => {
-      chatEl.innerHTML = "";
-      addMsg("bot", "أهلًا! اكتب سؤالك في الرياضيات وسأشرحه لك خطوة بخطوة.");
-    });
+sendBtn.onclick=sendMessage;
+inputEl.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
 
-    document.getElementById("chips").addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if (!chip) return;
-      sendMessage(chip.textContent);
-    });
-
-    // Greeting
-    addMsg("bot", "أهلًا! اكتب سؤالك في الرياضيات وسأشرحه لك خطوة بخطوة.");
-  </script>
+addMsg("bot","أهلًا! اكتب سؤالك في الرياضيات.");
+</script>
 </body>
 </html>

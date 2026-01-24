@@ -28,11 +28,17 @@ window.MathJax = {
   --muted:#a2b4d8;
   --accent:#4da3ff;
   --accent2:#76c3ff;
+
   --meGrad: linear-gradient(135deg, #1e90ff, #4da3ff);
-  --botBg: linear-gradient(135deg, rgba(18,43,82,.95), rgba(18,43,82,.75));
+  --botBg: rgba(18,43,82,.92);
+
   --shadow: 0 28px 90px rgba(0,0,0,.55);
   --shadow2: 0 12px 35px rgba(0,0,0,.35);
   --r:18px;
+
+  /* WhatsApp-like wallpaper tint (matches your blue palette) */
+  --waA: rgba(77,163,255,.08);
+  --waB: rgba(118,195,255,.06);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -126,6 +132,47 @@ body{
   border-color: rgba(77,163,255,.35);
 }
 
+/* selectors */
+.selectGrid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.selLabel{
+  font-size:12.5px;
+  color:rgba(234,242,255,.78);
+  margin-bottom:6px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.selectWrap{
+  border:1px solid var(--line);
+  background: rgba(0,0,0,.20);
+  border-radius: 14px;
+  padding:10px 10px;
+}
+select{
+  width:100%;
+  border:none;
+  outline:none;
+  background:transparent;
+  color:var(--text);
+  font-family:"Cairo", system-ui, Segoe UI, Arial;
+  font-weight:800;
+  font-size:13.5px;
+}
+option{ color:#071426; }
+
+.smallHint{
+  font-size:12px;
+  color:rgba(234,242,255,.60);
+  line-height:1.6;
+  margin-top:8px;
+}
+
 /* chat panel */
 .chatPanel{
   background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
@@ -135,6 +182,7 @@ body{
   overflow:hidden;
   display:flex;
   flex-direction:column;
+  position:relative;
 }
 .chatHeader{
   padding:14px 16px;
@@ -156,7 +204,7 @@ body{
 .hTitle{margin:0;font-weight:900;font-size:16px}
 .hSub{margin:0;color:rgba(234,242,255,.72);font-size:12.5px}
 
-/* ✅ chat scroll + smooth */
+/* WhatsApp-like wallpaper in chat area */
 .chat{
   flex:1;
   padding:16px 14px;
@@ -165,44 +213,97 @@ body{
   flex-direction:column;
   gap:12px;
   scroll-behavior:smooth;
-  -webkit-overflow-scrolling: touch; /* iOS Safari */
+  -webkit-overflow-scrolling: touch;
+
+  background:
+    radial-gradient(220px 160px at 15% 20%, var(--waA), transparent 60%),
+    radial-gradient(240px 180px at 80% 35%, var(--waB), transparent 60%),
+    radial-gradient(220px 160px at 30% 85%, var(--waB), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.14));
 }
 
-/* messages */
-.row{ display:flex; gap:10px; }
-.row.me{ justify-content:flex-start; }
-.row.bot{ justify-content:flex-end; }
+/* messages layout: bot left, me right */
+.row{ display:flex; gap:10px; align-items:flex-end; }
+.row.me{ justify-content:flex-end; }
+.row.bot{ justify-content:flex-start; }
 
-.bubble{
-  max-width: 86%;
-  padding:12px 12px;
-  border-radius:16px;
+/* avatar (small) */
+.avatar{
+  width:32px;height:32px;border-radius:12px;
   border:1px solid var(--line);
-  line-height:1.8;
+  background: rgba(255,255,255,.06);
+  display:grid;place-items:center;
+  font-weight:900;
+  flex:0 0 auto;
+}
+.avatar.me{ background: rgba(77,163,255,.12); }
+.avatar.bot{ background: rgba(255,255,255,.06); }
+
+/* bubble */
+.bubbleWrap{max-width: 86%; display:flex; flex-direction:column; gap:6px; position:relative;}
+.bubble{
+  padding:12px 12px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  line-height:1.85;
   font-size:14.5px;
   white-space:pre-wrap;
   box-shadow: 0 10px 24px rgba(0,0,0,.22);
 }
-.me .bubble{ background: var(--meGrad); color:#041225; border-color: rgba(77,163,255,.35); }
-.bot .bubble{ background: var(--botBg); }
 
+/* tails */
+.bubble::after{
+  content:"";
+  position:absolute;
+  bottom:10px;
+  width:14px;height:14px;
+  transform: rotate(45deg);
+  border-radius:3px;
+  opacity:.95;
+}
+.row.me .bubble::after{ right:-6px; background: #2b9bff; border-right:1px solid rgba(77,163,255,.18); border-bottom:1px solid rgba(77,163,255,.18); }
+.row.bot .bubble::after{ left:-6px; background: rgba(18,43,82,.92); border-left:1px solid rgba(255,255,255,.07); border-bottom:1px solid rgba(255,255,255,.07); }
+
+.row.me .bubble{
+  background: var(--meGrad);
+  color:#041225;
+  border-color: rgba(77,163,255,.35);
+}
+.row.bot .bubble{
+  background: var(--botBg);
+}
+
+/* meta row */
 .meta{
   font-size:12px;
   color:rgba(234,242,255,.55);
-  margin-top:6px;
   display:flex;
-  gap:8px;
+  gap:10px;
   align-items:center;
+  justify-content:space-between;
 }
+.meta .leftMeta{display:flex;gap:8px;align-items:center}
+.meta .rightMeta{display:flex;gap:8px;align-items:center}
+.miniBtn{
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  padding:5px 8px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:800;
+}
+.miniBtn:hover{ background: rgba(255,255,255,.10); }
 
 /* typing */
 .typingBubble{
   max-width: 70%;
   padding:12px 12px;
-  border-radius:16px;
+  border-radius:18px;
   border:1px dashed rgba(77,163,255,.35);
   background: rgba(18,43,82,.55);
-  color: rgba(234,242,255,.80);
+  color: rgba(234,242,255,.85);
   box-shadow: 0 10px 24px rgba(0,0,0,.22);
 }
 .typingLine{
@@ -210,7 +311,7 @@ body{
   align-items:center;
   gap:8px;
   font-size:13px;
-  font-weight:700;
+  font-weight:800;
 }
 .dots{display:inline-flex;gap:5px;align-items:center}
 .dots span{
@@ -258,10 +359,10 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
   display:flex;
   flex-direction:column;
   gap:8px;
-  min-width: 160px;
+  min-width: 170px;
 }
 @media(max-width: 520px){
-  .actionsCol{ min-width: 130px; }
+  .actionsCol{ min-width: 140px; }
 }
 .btn{
   border:none;
@@ -305,10 +406,10 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
   margin-inline:3px;
 }
 
-/* ✅ Scroll-to-top floating button */
+/* Scroll-to-top */
 .toTop{
   position:absolute;
-  left:14px; /* RTL: left is fine */
+  left:14px;
   bottom:92px;
   width:46px;
   height:46px;
@@ -327,12 +428,32 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
   z-index:5;
 }
 .toTop:hover{ background: rgba(255,255,255,.06); }
-.toTop.show{
-  opacity:1;
-  pointer-events:auto;
-  transform: translateY(0);
-}
+.toTop.show{ opacity:1; pointer-events:auto; transform: translateY(0); }
 .toTop span{ font-size:18px; font-weight:900; line-height:1; }
+
+/* toast */
+.toast{
+  position:absolute;
+  top:14px;
+  right:14px;
+  background: rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.10);
+  color: rgba(234,242,255,.92);
+  padding:10px 12px;
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.35);
+  opacity:0;
+  transform: translateY(-6px);
+  transition: opacity .18s ease, transform .18s ease;
+  z-index:10;
+  font-size:13px;
+  font-weight:800;
+}
+.toast.show{ opacity:1; transform: translateY(0); }
+
+/* rtl / ltr */
+body.ltr{ direction:ltr; }
+body.ltr .toTop{ left:auto; right:14px; }
 </style>
 </head>
 
@@ -356,7 +477,6 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
         <h3 id="howTitle">طريقة التواصل</h3>
         <p id="howText">
           • اكتب السؤال بوضوح داخل الدردشة.<br>
-          • لكتابة الكسور استخدم LaTeX مثل: $\\frac{1}{2}$.<br>
           • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.
         </p>
         <div class="pills" id="pills">
@@ -376,13 +496,43 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
       </div>
 
       <div class="card">
+        <h3 id="levelTitle">المستوى</h3>
+        <div class="selectGrid">
+          <div>
+            <div class="selLabel"><span id="lvlLabel">اختر مستوى الطالب</span><span id="lvlChip" style="color:rgba(234,242,255,.65);font-size:12px;font-weight:900;"></span></div>
+            <div class="selectWrap">
+              <select id="level">
+                <option value="primary">ابتدائي</option>
+                <option value="middle">متوسط</option>
+                <option value="high">ثانوي</option>
+                <option value="uni">جامعي</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <div class="selLabel"><span id="modeLabel">أسلوب الإجابة</span><span id="modeChip" style="color:rgba(234,242,255,.65);font-size:12px;font-weight:900;"></span></div>
+            <div class="selectWrap">
+              <select id="mode">
+                <option value="simple">شرح مبسط</option>
+                <option value="steps">حل خطوة بخطوة</option>
+                <option value="final">الجواب فقط</option>
+                <option value="quiz">اختبرني ثم صحح</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="smallHint" id="levelHint">اختر المستوى وأسلوب الإجابة قبل الإرسال لتحصل على شرح مناسب.</div>
+      </div>
+
+      <div class="card">
         <h3 id="noteTitle">ملاحظة</h3>
-        <p id="noteText">اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.</p>
+        <p id="noteText">اكتب التمرين كاملا وانتظر بضع ثواني وسيكون الحل بين يديك .</p>
       </div>
     </div>
   </aside>
 
-  <main class="chatPanel" style="position:relative">
+  <main class="chatPanel">
     <div class="chatHeader">
       <div class="chatHeaderLeft">
         <div class="logo">∑</div>
@@ -395,7 +545,8 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 
     <div id="chat" class="chat"></div>
 
-    <!-- ✅ زر الرجوع للأعلى -->
+    <div id="toast" class="toast"></div>
+
     <button id="toTop" class="toTop" type="button" aria-label="الرجوع للأعلى">
       <span>↑</span>
     </button>
@@ -414,7 +565,7 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 
       <div class="preview">
         <span id="statusText"></span>
-        <span></span>
+        <span id="pillStatus" style="font-weight:900;"></span>
       </div>
 
       <div class="kbdHint" id="kbdHint">
@@ -429,65 +580,100 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 /* ✅ ضع رابط الـ Worker هنا */
 const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
 
+/* storage keys */
+const STORAGE_KEY = "asmaa_chat_v2";
+const PREF_KEY = "asmaa_prefs_v2";
+
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
 const sendBtn = document.getElementById("sendBtn");
 const clearBtn = document.getElementById("clearBtn");
 const statusText = document.getElementById("statusText");
+const pillStatus = document.getElementById("pillStatus");
 
 const btnAr = document.getElementById("btnAr");
 const btnEn = document.getElementById("btnEn");
-
 const toTopBtn = document.getElementById("toTop");
+const toast = document.getElementById("toast");
 
+const levelSel = document.getElementById("level");
+const modeSel = document.getElementById("mode");
+const lvlChip = document.getElementById("lvlChip");
+const modeChip = document.getElementById("modeChip");
+
+/* i18n */
 const I18N = {
   ar: {
     sideTitle: "الأستاذة أسماء",
-    sideSub: "منصة رياضيات مميزة • شرح خطوة بخطوة",
+    sideSub: "منصة رياضيات مميزة • ذكاء متخصص في الرياضيات",
     howTitle: "طريقة التواصل",
     howText:
 `• اكتب السؤال بوضوح داخل الدردشة.
-• يمكنك استخدام الرموز: + − × ÷ و ^.
-• لكتابة الكسور استخدم LaTeX مثل: $\\frac{1}{2}$.
 • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.`,
     langTitle: "اختيار اللغة",
-    noteTitle: "ملاحظة",
-    noteText: "اكتب السؤال مباشرة أو اضغط على أحد الأمثلة الجاهزة لتسريع التواصل.",
+    levelTitle:"المستوى",
+    lvlLabel:"اختر مستوى الطالب",
+    modeLabel:"أسلوب الإجابة",
+    levelHint:"اختر المستوى وأسلوب الإجابة قبل الإرسال لتحصل على شرح مناسب.",
     mainTitle: "جلسة الرياضيات",
-    mainSub: "اكتب سؤالك وسأشرحه خطوة بخطوة",
+    mainSub: "اكتب سؤالك وسأشرحه حسب المستوى المختار",
     clear: "مسح المحادثة",
     send: "إرسال",
     placeholder: "اكتب سؤالك في الرياضيات هنا...",
-    greeting: "أهلًا بك! اكتب سؤالك في الرياضيات وسأشرحه خطوة بخطوة.",
+    greeting: "أهلًا بك! اختر المستوى ثم اكتب سؤالك في الرياضيات وسأشرحه بالطريقة المناسبة.",
     cleared: "تم مسح المحادثة. ابدأ تمرينًا جديدًا.",
     preparing: "الأستاذة أسماء تُحضّر الإجابة",
-    busy: "جاري الإرسال..."
+    busy: "جاري الإرسال...",
+    onlyMath: "هذه المنصة مخصصة للرياضيات فقط. اكتب سؤالًا رياضيًا من فضلك.",
+    copied: "تم النسخ ✅",
+    restored: "تم استرجاع المحادثة ✅"
   },
   en: {
     sideTitle: "Ms. Asmaa",
-    sideSub: "Math platform • Step-by-step explanations",
+    sideSub: "Math-only AI • Step-by-step explanations",
     howTitle: "How to ask",
     howText:
 `• Write your question clearly.
-• You can use symbols: + − × ÷ and ^.
+• Use symbols: + − × ÷ and ^.
 • For fractions use LaTeX: $\\frac{1}{2}$.
 • Send one exercise at a time for best accuracy.`,
     langTitle: "Language",
+    levelTitle:"Level",
+    lvlLabel:"Choose student level",
+    modeLabel:"Answer style",
+    levelHint:"Pick level & style before sending for a better explanation.",
     noteTitle: "Note",
     noteText: "Type your question directly, or tap an example to send it quickly.",
     mainTitle: "Math Session",
-    mainSub: "Type your question and get a step-by-step solution",
+    mainSub: "Type your question and get an answer tailored to your level",
     clear: "Clear chat",
     send: "Send",
     placeholder: "Type your math question here...",
-    greeting: "Welcome! Type your math question and I’ll explain it step by step.",
+    greeting: "Welcome! Choose a level, then type your math question and I’ll explain it accordingly.",
     cleared: "Chat cleared. Start a new exercise.",
     preparing: "Ms. Asmaa is preparing the answer",
-    busy: "Sending..."
+    busy: "Sending...",
+    onlyMath: "This assistant is for math only. Please ask a math question.",
+    copied: "Copied ✅",
+    restored: "Chat restored ✅"
   }
 };
 
 let lang = "ar";
+
+/* labels for chips */
+const LEVEL_LABELS = {
+  primary: { ar:"ابتدائي", en:"Primary" },
+  middle:  { ar:"متوسط",  en:"Middle"  },
+  high:    { ar:"ثانوي",  en:"High school" },
+  uni:     { ar:"جامعي",  en:"University" }
+};
+const MODE_LABELS = {
+  simple: { ar:"شرح مبسط", en:"Simple explanation" },
+  steps:  { ar:"خطوة بخطوة", en:"Step-by-step" },
+  final:  { ar:"الجواب فقط", en:"Final answer only" },
+  quiz:   { ar:"اختبرني", en:"Quiz me & correct" }
+};
 
 function nowTime(){
   const d = new Date();
@@ -495,9 +681,32 @@ function nowTime(){
 }
 function scrollToBottom(){ chat.scrollTop = chat.scrollHeight; }
 
-function addMsg(role, text){
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"), 1200);
+}
+
+/* simple "math-only" guard (UI-level) */
+function looksMathy(text){
+  const t = (text||"").toLowerCase();
+  const hasMathSymbols = /[0-9x y z+\-*/^=()√π∞∫∑]/.test(text);
+  const hasMathWordsAr = /(حل|معادلة|اشتق|تكامل|تفاضل|دالة|متباينة|مشتقة|نهاية|متتالية|متسلسلة|احتمال|هندسة|زوايا|مثلث|مربع|دائرة|جبر|حساب)/.test(text);
+  const hasMathWordsEn = /(solve|equation|derivative|integral|limit|function|probability|geometry|algebra|matrix|vectors|trigonometry)/.test(t);
+  return hasMathSymbols || hasMathWordsAr || hasMathWordsEn;
+}
+
+/* message rendering */
+function addMsg(role, text, opts={}){
   const row = document.createElement("div");
   row.className = "row " + (role === "me" ? "me" : "bot");
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar " + (role === "me" ? "me":"bot");
+  avatar.textContent = role === "me" ? "أ" : "∑";
+
+  const wrap = document.createElement("div");
+  wrap.className = "bubbleWrap";
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
@@ -505,22 +714,55 @@ function addMsg(role, text){
 
   const meta = document.createElement("div");
   meta.className = "meta";
-  meta.innerHTML = `<span>${role === "me" ? (lang==="ar"?"أنت":"You") : (lang==="ar"?"الأستاذة أسماء":"Ms. Asmaa")}</span> • <span>${nowTime()}</span>`;
 
-  const wrap = document.createElement("div");
+  const leftMeta = document.createElement("div");
+  leftMeta.className = "leftMeta";
+  leftMeta.innerHTML = `<span>${role === "me" ? (lang==="ar"?"أنت":"You") : (lang==="ar"?"الأستاذة أسماء":"Ms. Asmaa")}</span> • <span>${nowTime()}</span>`;
+
+  const rightMeta = document.createElement("div");
+  rightMeta.className = "rightMeta";
+
+  if(role === "bot"){
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "miniBtn";
+    copyBtn.textContent = (lang==="ar" ? "نسخ" : "Copy");
+    copyBtn.addEventListener("click", async ()=>{
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast(I18N[lang].copied);
+      }catch{
+        showToast(lang==="ar" ? "لم يتم النسخ" : "Copy failed");
+      }
+    });
+    rightMeta.appendChild(copyBtn);
+  }
+
+  meta.appendChild(leftMeta);
+  meta.appendChild(rightMeta);
+
   wrap.appendChild(bubble);
   wrap.appendChild(meta);
 
-  row.appendChild(wrap);
+  if(role === "me"){
+    row.appendChild(wrap);
+    row.appendChild(avatar);
+  }else{
+    row.appendChild(avatar);
+    row.appendChild(wrap);
+  }
+
   chat.appendChild(row);
 
+  // MathJax render
   if (window.MathJax && window.MathJax.typesetPromise) {
     window.MathJax.typesetPromise([bubble]).catch(()=>{});
   }
 
-  // Always keep latest visible unless user scrolled up a lot
-  const nearBottom = (chat.scrollHeight - chat.scrollTop - chat.clientHeight) < 180;
-  if (nearBottom) scrollToBottom();
+  const nearBottom = (chat.scrollHeight - chat.scrollTop - chat.clientHeight) < 220;
+  if (nearBottom || opts.forceScroll) scrollToBottom();
+
+  saveChat();
 }
 
 /* typing bubble */
@@ -529,6 +771,11 @@ function showTyping(){
   if(typingRow) return;
   typingRow = document.createElement("div");
   typingRow.className = "row bot";
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar bot";
+  avatar.textContent = "∑";
+
   const bubble = document.createElement("div");
   bubble.className = "typingBubble";
   bubble.innerHTML = `
@@ -537,7 +784,14 @@ function showTyping(){
       <span class="dots"><span></span><span></span><span></span></span>
     </div>
   `;
-  typingRow.appendChild(bubble);
+
+  const wrap = document.createElement("div");
+  wrap.className = "bubbleWrap";
+  wrap.appendChild(bubble);
+
+  typingRow.appendChild(avatar);
+  typingRow.appendChild(wrap);
+
   chat.appendChild(typingRow);
   scrollToBottom();
 }
@@ -547,59 +801,73 @@ function hideTyping(){
   typingRow = null;
 }
 
+/* busy */
 function setBusy(b){
   sendBtn.disabled = b;
   input.disabled = b;
   statusText.textContent = b ? I18N[lang].busy : "";
 }
 
-async function send(){
-  const q = input.value.trim();
-  if(!q) return;
-
-  addMsg("me", q);
-  input.value = "";
-  autoResize();
-
-  setBusy(true);
-
-  // Mobile reflow fix
-  await new Promise(r => setTimeout(r, 50));
-
-  showTyping();
-
-  try{
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ message: q })
-    });
-
-    const raw = await res.text();
-    let data;
-    try{ data = JSON.parse(raw); } catch { data = { answer: raw }; }
-
-    hideTyping();
-    addMsg("bot", (data.answer || "").toString().trim() || (lang==="ar" ? "لا يوجد رد واضح." : "No clear answer returned."));
-  }catch(e){
-    hideTyping();
-    addMsg("bot", lang==="ar" ? "تعذر الاتصال بالخادم." : "Connection failed.");
-  }finally{
-    setBusy(false);
-    scrollToBottom();
-  }
+/* autosize */
+function autoResize(){
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 140) + "px";
 }
+input.addEventListener("input", autoResize);
+autoResize();
+
+/* preferences */
+function getPrefs(){
+  return {
+    lang,
+    level: levelSel.value,
+    mode: modeSel.value
+  };
+}
+function applyChips(){
+  const level = levelSel.value;
+  const mode = modeSel.value;
+  lvlChip.textContent = (LEVEL_LABELS[level] ? LEVEL_LABELS[level][lang] : "");
+  modeChip.textContent = (MODE_LABELS[mode] ? MODE_LABELS[mode][lang] : "");
+  pillStatus.textContent = `${lvlChip.textContent} • ${modeChip.textContent}`;
+}
+function savePrefs(){
+  try{
+    localStorage.setItem(PREF_KEY, JSON.stringify(getPrefs()));
+  }catch{}
+}
+function loadPrefs(){
+  try{
+    const p = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
+    if(!p) return;
+    if(p.lang) lang = p.lang;
+    if(p.level) levelSel.value = p.level;
+    if(p.mode) modeSel.value = p.mode;
+  }catch{}
+}
+levelSel.addEventListener("change", ()=>{ applyChips(); savePrefs(); });
+modeSel.addEventListener("change", ()=>{ applyChips(); savePrefs(); });
 
 /* language */
 function applyLang(next){
   lang = next;
   const t = I18N[lang];
 
+  document.documentElement.lang = lang === "ar" ? "ar" : "en";
+  document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
+  document.body.classList.toggle("ltr", lang === "en");
+
   document.getElementById("sideTitle").textContent = t.sideTitle;
   document.getElementById("sideSub").textContent = t.sideSub;
   document.getElementById("howTitle").textContent = t.howTitle;
   document.getElementById("howText").innerHTML = t.howText.replaceAll("\n","<br>");
   document.getElementById("langTitle").textContent = t.langTitle;
+
+  document.getElementById("levelTitle").textContent = t.levelTitle;
+  document.getElementById("lvlLabel").textContent = t.lvlLabel;
+  document.getElementById("modeLabel").textContent = t.modeLabel;
+  document.getElementById("levelHint").textContent = t.levelHint;
+
   document.getElementById("noteTitle").textContent = t.noteTitle;
   document.getElementById("noteText").textContent = t.noteText;
 
@@ -612,6 +880,9 @@ function applyLang(next){
 
   btnAr.classList.toggle("active", lang==="ar");
   btnEn.classList.toggle("active", lang==="en");
+
+  applyChips();
+  savePrefs();
 }
 
 btnAr.addEventListener("click", ()=>applyLang("ar"));
@@ -629,10 +900,61 @@ document.getElementById("pills").addEventListener("click", (e)=>{
 /* clear */
 clearBtn.addEventListener("click", ()=>{
   chat.innerHTML = "";
-  addMsg("bot", I18N[lang].cleared);
+  localStorage.removeItem(STORAGE_KEY);
+  addMsg("bot", I18N[lang].cleared, {forceScroll:true});
 });
 
 /* send */
+async function send(){
+  const q = input.value.trim();
+  if(!q) return;
+
+  // UI-level math-only guard
+  if(!looksMathy(q)){
+    showToast(I18N[lang].onlyMath);
+    return;
+  }
+
+  const level = levelSel.value;
+  const mode  = modeSel.value;
+
+  addMsg("me", q, {forceScroll:true});
+  input.value = "";
+  autoResize();
+
+  setBusy(true);
+  await new Promise(r => setTimeout(r, 50));
+  showTyping();
+
+  try{
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        message: q,
+        language: lang,
+        level: level,
+        mode: mode
+      })
+    });
+
+    const raw = await res.text();
+    let data;
+    try{ data = JSON.parse(raw); } catch { data = { answer: raw }; }
+
+    hideTyping();
+    const ans = (data.answer || "").toString().trim();
+    addMsg("bot", ans || (lang==="ar" ? "لا يوجد رد واضح." : "No clear answer returned."), {forceScroll:true});
+
+  }catch(e){
+    hideTyping();
+    addMsg("bot", lang==="ar" ? "تعذر الاتصال بالخادم." : "Connection failed.", {forceScroll:true});
+  }finally{
+    setBusy(false);
+    scrollToBottom();
+  }
+}
+
 sendBtn.addEventListener("click", send);
 input.addEventListener("keydown", (e)=>{
   if(e.key === "Enter" && !e.shiftKey){
@@ -641,17 +963,9 @@ input.addEventListener("keydown", (e)=>{
   }
 });
 
-/* autosize */
-function autoResize(){
-  input.style.height = "auto";
-  input.style.height = Math.min(input.scrollHeight, 140) + "px";
-}
-input.addEventListener("input", autoResize);
-autoResize();
-
-/* ✅ Scroll-to-top behavior */
+/* Scroll-to-top behavior */
 function updateToTop(){
-  const scrolled = chat.scrollTop > 280; // show after user scrolls down
+  const scrolled = chat.scrollTop > 280;
   toTopBtn.classList.toggle("show", scrolled);
 }
 chat.addEventListener("scroll", updateToTop, { passive:true });
@@ -660,9 +974,43 @@ toTopBtn.addEventListener("click", ()=>{
 });
 updateToTop();
 
+/* chat persistence */
+function saveChat(){
+  try{
+    const items = [];
+    chat.querySelectorAll(".row").forEach(row=>{
+      const role = row.classList.contains("me") ? "me" : "bot";
+      const bubble = row.querySelector(".bubble");
+      const text = bubble ? bubble.textContent : "";
+      items.push({ role, text });
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }catch{}
+}
+function loadChat(){
+  try{
+    const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if(!items || !Array.isArray(items) || items.length===0) return false;
+    chat.innerHTML = "";
+    items.forEach(it=> addMsg(it.role, it.text, {forceScroll:false}));
+    return true;
+  }catch{
+    return false;
+  }
+}
+
 /* init */
-applyLang("ar");
-addMsg("bot", I18N[lang].greeting);
+loadPrefs();
+applyLang(lang);
+applyChips();
+
+const restored = loadChat();
+if(!restored){
+  addMsg("bot", I18N[lang].greeting, {forceScroll:true});
+}else{
+  showToast(I18N[lang].restored);
+  scrollToBottom();
+}
 </script>
 
 </body>

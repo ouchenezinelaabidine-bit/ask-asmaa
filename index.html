@@ -36,12 +36,13 @@ window.MathJax = {
   --shadow2: 0 12px 35px rgba(0,0,0,.35);
   --r:18px;
 
-  /* WhatsApp-like wallpaper tint (matches your blue palette) */
   --waA: rgba(77,163,255,.08);
   --waB: rgba(118,195,255,.06);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
+
+/* ✅ FIX: no vertical centering (avoids “limited/cropped” start on iOS) */
 body{
   margin:0;
   font-family:"Cairo", system-ui, Segoe UI, Arial;
@@ -50,14 +51,18 @@ body{
     radial-gradient(900px 600px at 85% 15%, rgba(118,195,255,.12), transparent 60%),
     linear-gradient(180deg, var(--bg0), var(--bg1));
   color:var(--text);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  display:block;
   padding:14px;
+  min-height:100vh;
+  min-height:100dvh;
 }
+
+/* ✅ FIX: stable full height + centered horizontally */
 .app{
   width:min(1200px,100%);
-  min-height:100svh;
+  margin:0 auto;
+  min-height:calc(100vh - 28px);
+  min-height:calc(100dvh - 28px);
   display:grid;
   grid-template-columns: 360px 1fr;
   gap:14px;
@@ -68,6 +73,7 @@ body{
 
 /* side */
 .side{
+  height:100%;
   background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
   border:1px solid var(--line);
   border-radius: calc(var(--r) + 6px);
@@ -175,6 +181,7 @@ option{ color:#071426; }
 
 /* chat panel */
 .chatPanel{
+  height:100%;
   background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
   border:1px solid var(--line);
   border-radius: calc(var(--r) + 6px);
@@ -204,7 +211,7 @@ option{ color:#071426; }
 .hTitle{margin:0;font-weight:900;font-size:16px}
 .hSub{margin:0;color:rgba(234,242,255,.72);font-size:12.5px}
 
-/* WhatsApp-like wallpaper in chat area */
+/* chat */
 .chat{
   flex:1;
   padding:16px 14px;
@@ -212,7 +219,7 @@ option{ color:#071426; }
   display:flex;
   flex-direction:column;
   gap:12px;
-  scroll-behavior:smooth;
+  scroll-behavior:auto; /* ✅ iOS friendly */
   -webkit-overflow-scrolling: touch;
 
   background:
@@ -227,7 +234,6 @@ option{ color:#071426; }
 .row.me{ justify-content:flex-end; }
 .row.bot{ justify-content:flex-start; }
 
-/* avatar (small) */
 .avatar{
   width:32px;height:32px;border-radius:12px;
   border:1px solid var(--line);
@@ -239,7 +245,6 @@ option{ color:#071426; }
 .avatar.me{ background: rgba(77,163,255,.12); }
 .avatar.bot{ background: rgba(255,255,255,.06); }
 
-/* bubble */
 .bubbleWrap{max-width: 86%; display:flex; flex-direction:column; gap:6px; position:relative;}
 .bubble{
   padding:12px 12px;
@@ -251,7 +256,6 @@ option{ color:#071426; }
   box-shadow: 0 10px 24px rgba(0,0,0,.22);
 }
 
-/* tails */
 .bubble::after{
   content:"";
   position:absolute;
@@ -264,16 +268,9 @@ option{ color:#071426; }
 .row.me .bubble::after{ right:-6px; background: #2b9bff; border-right:1px solid rgba(77,163,255,.18); border-bottom:1px solid rgba(77,163,255,.18); }
 .row.bot .bubble::after{ left:-6px; background: rgba(18,43,82,.92); border-left:1px solid rgba(255,255,255,.07); border-bottom:1px solid rgba(255,255,255,.07); }
 
-.row.me .bubble{
-  background: var(--meGrad);
-  color:#041225;
-  border-color: rgba(77,163,255,.35);
-}
-.row.bot .bubble{
-  background: var(--botBg);
-}
+.row.me .bubble{ background: var(--meGrad); color:#041225; border-color: rgba(77,163,255,.35); }
+.row.bot .bubble{ background: var(--botBg); }
 
-/* meta row */
 .meta{
   font-size:12px;
   color:rgba(234,242,255,.55);
@@ -296,7 +293,6 @@ option{ color:#071426; }
 }
 .miniBtn:hover{ background: rgba(255,255,255,.10); }
 
-/* typing */
 .typingBubble{
   max-width: 70%;
   padding:12px 12px;
@@ -431,7 +427,6 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 .toTop.show{ opacity:1; pointer-events:auto; transform: translateY(0); }
 .toTop span{ font-size:18px; font-weight:900; line-height:1; }
 
-/* toast */
 .toast{
   position:absolute;
   top:14px;
@@ -454,6 +449,7 @@ textarea::placeholder{ color: rgba(234,242,255,.55); }
 /* rtl / ltr */
 body.ltr{ direction:ltr; }
 body.ltr .toTop{ left:auto; right:14px; }
+body.ltr .toast{ right:auto; left:14px; }
 </style>
 </head>
 
@@ -537,8 +533,9 @@ body.ltr .toTop{ left:auto; right:14px; }
       <div class="chatHeaderLeft">
         <div class="logo">∑</div>
         <div style="min-width:0">
-          <p class="hTitle" id="mainTitle">جلسة الرياضيات</p>
-          <p class="hSub" id="mainSub">اكتب سؤالك وسأشرحه خطوة بخطوة</p>
+          <!-- ✅ FIX: show teacher name on top -->
+          <p class="hTitle" id="mainTitle">الأستاذة أسماء</p>
+          <p class="hSub" id="mainSub">جلسة الرياضيات • اكتب سؤالك وسأشرحه حسب المستوى</p>
         </div>
       </div>
     </div>
@@ -577,10 +574,8 @@ body.ltr .toTop{ left:auto; right:14px; }
 </div>
 
 <script>
-/* ✅ ضع رابط الـ Worker هنا */
 const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
 
-/* storage keys */
 const STORAGE_KEY = "asmaa_chat_v2";
 const PREF_KEY = "asmaa_prefs_v2";
 
@@ -601,7 +596,9 @@ const modeSel = document.getElementById("mode");
 const lvlChip = document.getElementById("lvlChip");
 const modeChip = document.getElementById("modeChip");
 
-/* i18n */
+const mainTitle = document.getElementById("mainTitle");
+const mainSub   = document.getElementById("mainSub");
+
 const I18N = {
   ar: {
     sideTitle: "الأستاذة أسماء",
@@ -615,8 +612,8 @@ const I18N = {
     lvlLabel:"اختر مستوى الطالب",
     modeLabel:"أسلوب الإجابة",
     levelHint:"اختر المستوى وأسلوب الإجابة قبل الإرسال لتحصل على شرح مناسب.",
-    mainTitle: "جلسة الرياضيات",
-    mainSub: "اكتب سؤالك وسأشرحه حسب المستوى المختار",
+    mainTitle: "الأستاذة أسماء",
+    mainSub: "جلسة الرياضيات • اكتب سؤالك وسأشرحه حسب المستوى",
     clear: "مسح المحادثة",
     send: "إرسال",
     placeholder: "اكتب سؤالك في الرياضيات هنا...",
@@ -634,18 +631,14 @@ const I18N = {
     howTitle: "How to ask",
     howText:
 `• Write your question clearly.
-• Use symbols: + − × ÷ and ^.
-• For fractions use LaTeX: $\\frac{1}{2}$.
 • Send one exercise at a time for best accuracy.`,
     langTitle: "Language",
     levelTitle:"Level",
     lvlLabel:"Choose student level",
     modeLabel:"Answer style",
     levelHint:"Pick level & style before sending for a better explanation.",
-    noteTitle: "Note",
-    noteText: "Type your question directly, or tap an example to send it quickly.",
-    mainTitle: "Math Session",
-    mainSub: "Type your question and get an answer tailored to your level",
+    mainTitle: "Ms. Asmaa",
+    mainSub: "Math session • Ask and get a level-based explanation",
     clear: "Clear chat",
     send: "Send",
     placeholder: "Type your math question here...",
@@ -661,7 +654,6 @@ const I18N = {
 
 let lang = "ar";
 
-/* labels for chips */
 const LEVEL_LABELS = {
   primary: { ar:"ابتدائي", en:"Primary" },
   middle:  { ar:"متوسط",  en:"Middle"  },
@@ -672,14 +664,13 @@ const MODE_LABELS = {
   simple: { ar:"شرح مبسط", en:"Simple explanation" },
   steps:  { ar:"خطوة بخطوة", en:"Step-by-step" },
   final:  { ar:"الجواب فقط", en:"Final answer only" },
-  quiz:   { ar:"اختبرني", en:"Quiz me & correct" }
+  quiz:   { ar:"اختبرني ثم صحح", en:"Quiz me & correct" }
 };
 
 function nowTime(){
   const d = new Date();
   return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
-function scrollToBottom(){ chat.scrollTop = chat.scrollHeight; }
 
 function showToast(msg){
   toast.textContent = msg;
@@ -687,7 +678,6 @@ function showToast(msg){
   setTimeout(()=>toast.classList.remove("show"), 1200);
 }
 
-/* simple "math-only" guard (UI-level) */
 function looksMathy(text){
   const t = (text||"").toLowerCase();
   const hasMathSymbols = /[0-9x y z+\-*/^=()√π∞∫∑]/.test(text);
@@ -696,14 +686,21 @@ function looksMathy(text){
   return hasMathSymbols || hasMathWordsAr || hasMathWordsEn;
 }
 
-/* message rendering */
+/* ✅ iOS-safe scrolling */
+function scrollToBottom(){ chat.scrollTop = chat.scrollHeight; }
+function scrollToTopHard(){
+  chat.scrollTop = 0;
+  requestAnimationFrame(()=>{ chat.scrollTop = 0; });
+  window.scrollTo({ top:0, left:0, behavior:"auto" });
+}
+
 function addMsg(role, text, opts={}){
   const row = document.createElement("div");
   row.className = "row " + (role === "me" ? "me" : "bot");
 
   const avatar = document.createElement("div");
   avatar.className = "avatar " + (role === "me" ? "me":"bot");
-  avatar.textContent = role === "me" ? "أ" : "∑";
+  avatar.textContent = role === "me" ? (lang==="ar" ? "أ" : "Me") : "∑";
 
   const wrap = document.createElement("div");
   wrap.className = "bubbleWrap";
@@ -754,7 +751,6 @@ function addMsg(role, text, opts={}){
 
   chat.appendChild(row);
 
-  // MathJax render
   if (window.MathJax && window.MathJax.typesetPromise) {
     window.MathJax.typesetPromise([bubble]).catch(()=>{});
   }
@@ -765,7 +761,6 @@ function addMsg(role, text, opts={}){
   saveChat();
 }
 
-/* typing bubble */
 let typingRow = null;
 function showTyping(){
   if(typingRow) return;
@@ -801,14 +796,12 @@ function hideTyping(){
   typingRow = null;
 }
 
-/* busy */
 function setBusy(b){
   sendBtn.disabled = b;
   input.disabled = b;
   statusText.textContent = b ? I18N[lang].busy : "";
 }
 
-/* autosize */
 function autoResize(){
   input.style.height = "auto";
   input.style.height = Math.min(input.scrollHeight, 140) + "px";
@@ -816,14 +809,7 @@ function autoResize(){
 input.addEventListener("input", autoResize);
 autoResize();
 
-/* preferences */
-function getPrefs(){
-  return {
-    lang,
-    level: levelSel.value,
-    mode: modeSel.value
-  };
-}
+function getPrefs(){ return { lang, level: levelSel.value, mode: modeSel.value }; }
 function applyChips(){
   const level = levelSel.value;
   const mode = modeSel.value;
@@ -832,9 +818,7 @@ function applyChips(){
   pillStatus.textContent = `${lvlChip.textContent} • ${modeChip.textContent}`;
 }
 function savePrefs(){
-  try{
-    localStorage.setItem(PREF_KEY, JSON.stringify(getPrefs()));
-  }catch{}
+  try{ localStorage.setItem(PREF_KEY, JSON.stringify(getPrefs())); }catch{}
 }
 function loadPrefs(){
   try{
@@ -848,7 +832,6 @@ function loadPrefs(){
 levelSel.addEventListener("change", ()=>{ applyChips(); savePrefs(); });
 modeSel.addEventListener("change", ()=>{ applyChips(); savePrefs(); });
 
-/* language */
 function applyLang(next){
   lang = next;
   const t = I18N[lang];
@@ -868,11 +851,9 @@ function applyLang(next){
   document.getElementById("modeLabel").textContent = t.modeLabel;
   document.getElementById("levelHint").textContent = t.levelHint;
 
-  document.getElementById("noteTitle").textContent = t.noteTitle;
-  document.getElementById("noteText").textContent = t.noteText;
-
-  document.getElementById("mainTitle").textContent = t.mainTitle;
-  document.getElementById("mainSub").textContent = t.mainSub;
+  /* ✅ FIX: header always shows teacher name */
+  mainTitle.textContent = t.mainTitle;
+  mainSub.textContent   = t.mainSub;
 
   clearBtn.textContent = t.clear;
   sendBtn.textContent = t.send;
@@ -888,7 +869,6 @@ function applyLang(next){
 btnAr.addEventListener("click", ()=>applyLang("ar"));
 btnEn.addEventListener("click", ()=>applyLang("en"));
 
-/* examples */
 document.getElementById("pills").addEventListener("click", (e)=>{
   const pill = e.target.closest(".pill");
   if(!pill) return;
@@ -897,19 +877,23 @@ document.getElementById("pills").addEventListener("click", (e)=>{
   autoResize();
 });
 
-/* clear */
 clearBtn.addEventListener("click", ()=>{
   chat.innerHTML = "";
   localStorage.removeItem(STORAGE_KEY);
   addMsg("bot", I18N[lang].cleared, {forceScroll:true});
 });
 
-/* send */
+function buildPrefix(){
+  // helps force response language even if Worker ignores the field
+  return (lang === "en")
+    ? "Answer in English only. Math only. "
+    : "أجب بالعربية فقط. رياضيات فقط. ";
+}
+
 async function send(){
   const q = input.value.trim();
   if(!q) return;
 
-  // UI-level math-only guard
   if(!looksMathy(q)){
     showToast(I18N[lang].onlyMath);
     return;
@@ -927,11 +911,13 @@ async function send(){
   showTyping();
 
   try{
+    const finalMessage = buildPrefix() + q;
+
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
-        message: q,
+        message: finalMessage,
         language: lang,
         level: level,
         mode: mode
@@ -963,18 +949,14 @@ input.addEventListener("keydown", (e)=>{
   }
 });
 
-/* Scroll-to-top behavior */
 function updateToTop(){
   const scrolled = chat.scrollTop > 280;
   toTopBtn.classList.toggle("show", scrolled);
 }
 chat.addEventListener("scroll", updateToTop, { passive:true });
-toTopBtn.addEventListener("click", ()=>{
-  chat.scrollTo({ top: 0, behavior: "smooth" });
-});
+toTopBtn.addEventListener("click", ()=>{ scrollToTopHard(); });
 updateToTop();
 
-/* chat persistence */
 function saveChat(){
   try{
     const items = [];

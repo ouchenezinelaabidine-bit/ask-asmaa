@@ -1,3 +1,6 @@
+<!-- =========================
+PART 1 / 2  (انسخ هذا أولاً)
+========================= -->
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -9,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- MathJax -->
+<!-- MathJax (اختياري) -->
 <script>
 window.MathJax = {
   tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -42,7 +45,6 @@ window.MathJax = {
 *{box-sizing:border-box}
 html,body{height:100%}
 
-/* ✅ FIX: no vertical centering (avoids “limited/cropped” start on iOS) */
 body{
   margin:0;
   font-family:"Cairo", system-ui, Segoe UI, Arial;
@@ -57,7 +59,6 @@ body{
   min-height:100dvh;
 }
 
-/* ✅ FIX: stable full height + centered horizontally */
 .app{
   width:min(1200px,100%);
   margin:0 auto;
@@ -219,7 +220,7 @@ option{ color:#071426; }
   display:flex;
   flex-direction:column;
   gap:12px;
-  scroll-behavior:auto; /* ✅ iOS friendly */
+  scroll-behavior:auto;
   -webkit-overflow-scrolling: touch;
 
   background:
@@ -229,7 +230,7 @@ option{ color:#071426; }
     linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.14));
 }
 
-/* messages layout: bot left, me right */
+/* messages layout */
 .row{ display:flex; gap:10px; align-items:flex-end; }
 .row.me{ justify-content:flex-end; }
 .row.bot{ justify-content:flex-start; }
@@ -463,7 +464,7 @@ body.ltr .toast{ right:auto; left:14px; }
         <div class="badgeOrb" aria-hidden="true"></div>
         <div style="min-width:0">
           <h2 class="sideTitle" id="sideTitle">الأستاذة أسماء</h2>
-          <p class="sideSub" id="sideSub">منصة رياضيات مميزة • شرح خطوة بخطوة</p>
+          <p class="sideSub" id="sideSub">منصة رياضيات مميزة • شرح واضح</p>
         </div>
       </div>
     </div>
@@ -475,9 +476,8 @@ body.ltr .toast{ right:auto; left:14px; }
           • اكتب السؤال بوضوح داخل الدردشة.<br>
           • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.
         </p>
-        <div class="pills" id="pills">
-
-        </div>
+        <div class="pills" id="pills"></div>
+        <div class="smallHint" id="pillHint"></div>
       </div>
 
       <div class="card">
@@ -520,7 +520,7 @@ body.ltr .toast{ right:auto; left:14px; }
 
       <div class="card">
         <h3 id="noteTitle">ملاحظة</h3>
-        <p id="noteText">اكتب التمرين كاملا وانتظر بضع ثواني وسيكون الحل بين يديك .</p>
+        <p id="noteText">كل الردود داخل مجال الرياضيات فقط، وبأسلوب واضح ورموز سهلة.</p>
       </div>
     </div>
   </aside>
@@ -530,7 +530,6 @@ body.ltr .toast{ right:auto; left:14px; }
       <div class="chatHeaderLeft">
         <div class="logo">∑</div>
         <div style="min-width:0">
-          <!-- ✅ FIX: show teacher name on top -->
           <p class="hTitle" id="mainTitle">الأستاذة أسماء</p>
           <p class="hSub" id="mainSub">جلسة الرياضيات • اكتب سؤالك وسأشرحه حسب المستوى</p>
         </div>
@@ -573,8 +572,8 @@ body.ltr .toast{ right:auto; left:14px; }
 <script>
 const WORKER_URL = "https://ask-asmaa.ouchene-zinelaabidine.workers.dev";
 
-const STORAGE_KEY = "asmaa_chat_v2";
-const PREF_KEY = "asmaa_prefs_v2";
+const STORAGE_KEY = "asmaa_chat_v4";
+const PREF_KEY = "asmaa_prefs_v4";
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
@@ -596,6 +595,8 @@ const modeChip = document.getElementById("modeChip");
 const mainTitle = document.getElementById("mainTitle");
 const mainSub   = document.getElementById("mainSub");
 
+let lang = "ar";
+
 const I18N = {
   ar: {
     sideTitle: "الأستاذة أسماء",
@@ -604,6 +605,7 @@ const I18N = {
     howText:
 `• اكتب السؤال بوضوح داخل الدردشة.
 • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.`,
+    pillHint: "أمثلة سريعة (اضغط لإدخال السؤال):",
     langTitle: "اختيار اللغة",
     levelTitle:"المستوى",
     lvlLabel:"اختر مستوى الطالب",
@@ -614,22 +616,23 @@ const I18N = {
     clear: "مسح المحادثة",
     send: "إرسال",
     placeholder: "اكتب سؤالك في الرياضيات هنا...",
-    greeting: "أهلًا بك! اختر المستوى ثم اكتب سؤالك في الرياضيات وسأشرحه بالطريقة المناسبة.",
-    cleared: "تم مسح المحادثة. ابدأ تمرينًا جديدًا.",
+    greeting: "مرحبًا بك 👋\nاكتب سؤالًا في الرياضيات (حتى لو بدون رموز) وسأشرحه بوضوح.",
+    cleared: "تم مسح المحادثة ✅ ابدأ تمرينًا جديدًا.",
     preparing: "الأستاذة أسماء تُحضّر الإجابة",
     busy: "جاري الإرسال...",
-    /* ✅ تعديل الجملة لتكون لبقة */
-    onlyMath: "عذرًا، أنا مختصة بالرياضيات فقط ولا يمكنني الإجابة عن هذا النوع من الأسئلة. من فضلك اكتب سؤالًا في الرياضيات.",
+    onlyMath: "شكرًا لك 🌟\nأنا مختصة بالرياضيات فقط، لذلك لا أستطيع الإجابة عن هذا النوع من الرسائل. من فضلك اكتب سؤالًا في الرياضيات وسأساعدك بكل سرور.",
     copied: "تم النسخ ✅",
-    restored: "تم استرجاع المحادثة ✅"
+    restored: "تم استرجاع المحادثة ✅",
+    noAnswer: "لم يصلني رد واضح. جرّب إعادة صياغة السؤال."
   },
   en: {
     sideTitle: "Ms. Asmaa",
-    sideSub: "Math-only AI • Step-by-step explanations",
+    sideSub: "Math-only AI • Clear explanations",
     howTitle: "How to ask",
     howText:
 `• Write your question clearly.
 • Send one exercise at a time for best accuracy.`,
+    pillHint: "Quick examples (tap to insert):",
     langTitle: "Language",
     levelTitle:"Level",
     lvlLabel:"Choose student level",
@@ -640,18 +643,16 @@ const I18N = {
     clear: "Clear chat",
     send: "Send",
     placeholder: "Type your math question here...",
-    greeting: "Welcome! Choose a level, then type your math question and I’ll explain it accordingly.",
-    cleared: "Chat cleared. Start a new exercise.",
+    greeting: "Welcome 👋\nAsk any math question (even without symbols) and I’ll explain it clearly.",
+    cleared: "Chat cleared ✅ Start a new exercise.",
     preparing: "Ms. Asmaa is preparing the answer",
     busy: "Sending...",
-    /* ✅ تعديل الجملة لتكون لبقة */
-    onlyMath: "Sorry, I specialize in mathematics only and I can’t answer this type of question. Please ask a math question.",
+    onlyMath: "Thank you 🌟\nI specialize in mathematics only, so I can’t answer this kind of message. Please ask a math question and I’ll be happy to help.",
     copied: "Copied ✅",
-    restored: "Chat restored ✅"
+    restored: "Chat restored ✅",
+    noAnswer: "No clear answer returned. Try rephrasing the question."
   }
 };
-
-let lang = "ar";
 
 const LEVEL_LABELS = {
   primary: { ar:"ابتدائي", en:"Primary" },
@@ -665,28 +666,15 @@ const MODE_LABELS = {
   final:  { ar:"الجواب فقط", en:"Final answer only" },
   quiz:   { ar:"اختبرني ثم صحح", en:"Quiz me & correct" }
 };
-
 function nowTime(){
   const d = new Date();
   return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
-
 function showToast(msg){
   toast.textContent = msg;
   toast.classList.add("show");
   setTimeout(()=>toast.classList.remove("show"), 1200);
 }
-
-/* (موجود كما هو، لكن لم نعد نستخدمه لمنع الإرسال) */
-function looksMathy(text){
-  const t = (text||"").toLowerCase();
-  const hasMathSymbols = /[0-9x y z+\-*/^=()√π∞∫∑]/.test(text);
-  const hasMathWordsAr = /(حل|معادلة|اشتق|تكامل|تفاضل|دالة|متباينة|مشتقة|نهاية|متتالية|متسلسلة|احتمال|هندسة|زوايا|مثلث|مربع|دائرة|جبر|حساب)/.test(text);
-  const hasMathWordsEn = /(solve|equation|derivative|integral|limit|function|probability|geometry|algebra|matrix|vectors|trigonometry)/.test(t);
-  return hasMathSymbols || hasMathWordsAr || hasMathWordsEn;
-}
-
-/* ✅ iOS-safe scrolling */
 function scrollToBottom(){ chat.scrollTop = chat.scrollHeight; }
 function scrollToTopHard(){
   chat.scrollTop = 0;
@@ -694,6 +682,44 @@ function scrollToTopHard(){
   window.scrollTo({ top:0, left:0, behavior:"auto" });
 }
 
+/* ===== رموز واضحة ===== */
+const SUP_MAP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function toSupDigits(s){ return s.split("").map(ch => SUP_MAP[ch] || ch).join(""); }
+function prettifyMathText(text){
+  let s = (text || "").toString();
+  s = s.replace(/```[\s\S]*?```/g, (blk)=> blk.replace(/```/g,""));
+  s = s.replace(/sqrt\s*\(\s*([^)]+?)\s*\)/gi, (m, inside)=> `√(${inside.trim()})`);
+  s = s.replace(/\^([0-9]{2,})/g, (m, ds)=> toSupDigits(ds));
+  s = s.replace(/\^([0-9])/g, (m, d)=> SUP_MAP[d] || m);
+  s = s.replace(/([0-9\u0660-\u0669\u06F0-\u06F9]+)\s*\/\s*([0-9\u0660-\u0669\u06F0-\u06F9]+)/g, "$1⁄$2");
+  s = s.replace(/(\d|\)|[a-zA-Z\u0621-\u064A])\s*\*\s*(\d|\(|[a-zA-Z\u0621-\u064A])/g, "$1 × $2");
+  s = s.replace(/(\d|\)|[a-zA-Z\u0621-\u064A])\s*\/\s*(\d|\(|[a-zA-Z\u0621-\u064A])/g, "$1 ÷ $2");
+  s = s.replace(/<=/g,"≤").replace(/>=/g,"≥");
+  return s.trim();
+}
+
+/* ===== تمييز رياضيات قوي (يشمل التفاضل/التكامل/ODE/PDE/تربيعية...) ===== */
+function hasMathSignals(text){
+  const s = (text || "").toString();
+  const digitAny = /[0-9\u0660-\u0669\u06F0-\u06F9]/;
+  const sym = /[+\-*/^=()×÷√π∞∫∑≤≥]/;
+  const vars = /\b(x|y|z|t|n|k|a|b|c|sin|cos|tan|log|ln)\b/i;
+
+  const wordsAr = /(رياضيات|مسألة|تمرين|حل|احسب|أحسب|اوجد|أوجد|بسط|بسّط|تبسيط|اختزل|كسر|كسور|نسبة|تناسب|معادلة|معادلات|تربيعية|من الدرجة الثانية|درجة ثانية|متباينة|متراجحة|دالة|مشتقة|اشتقاق|اشتق|تفاضل|تكامل|نهاية|متتالية|متسلسلة|احتمال|إحصاء|هندسة|زاوية|مثلث|مربع|دائرة|محيط|مساحة|حجم|قطر|نصف قطر|جذر|أس|قوة|لوغاريتم|مصفوفة|متجه|إحداثيات|ميل|نسبة مئوية|تفاضلية|معادلة تفاضلية|ODE|PDE)/i;
+
+  const wordsEn = /(math|problem|exercise|solve|compute|calculate|simplify|factor|equation|quadratic|second degree|inequality|function|derivative|integral|limit|probability|statistics|geometry|algebra|matrix|vector|trigonometry|sqrt|power|exponent|logarithm|coordinate|slope|percentage|differential equation|ode|pde)/i;
+
+  return (digitAny.test(s) && sym.test(s)) || sym.test(s) || vars.test(s) || wordsAr.test(s) || wordsEn.test(s);
+}
+
+/* نستخدم رفضًا “شديد الصرامة” فقط: لازم يكون واضح غير رياضي  */
+function isClearlyNonMath(text){
+  const t = (text||"").toLowerCase();
+  const offTopic = /(سياسة|دين|زواج|علاقة|حب|كرة|مباراة|فيلم|مسلسل|أغنية|طبخ|وصفة|سفر|وظيفة|راتب|bitcoin|football|movie|music|relationship|politics|religion|recipe|travel|iphone|canon|طابعة|واتساب|انستجرام|تيك توك|سناب)/i;
+  return offTopic.test(t) && !hasMathSignals(text);
+}
+
+/* ===== الرسائل ===== */
 function addMsg(role, text, opts={}){
   const row = document.createElement("div");
   row.className = "row " + (role === "me" ? "me" : "bot");
@@ -761,6 +787,7 @@ function addMsg(role, text, opts={}){
   saveChat();
 }
 
+/* typing */
 let typingRow = null;
 function showTyping(){
   if(typingRow) return;
@@ -809,6 +836,7 @@ function autoResize(){
 input.addEventListener("input", autoResize);
 autoResize();
 
+/* prefs */
 function getPrefs(){ return { lang, level: levelSel.value, mode: modeSel.value }; }
 function applyChips(){
   const level = levelSel.value;
@@ -832,6 +860,27 @@ function loadPrefs(){
 levelSel.addEventListener("change", ()=>{ applyChips(); savePrefs(); });
 modeSel.addEventListener("change", ()=>{ applyChips(); savePrefs(); });
 
+function renderPills(){
+  const wrap = document.getElementById("pills");
+  wrap.innerHTML = "";
+  (PILL_EXAMPLES[lang] || []).forEach(ex=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "pill";
+    b.textContent = ex;
+    b.dataset.ex = ex;
+    wrap.appendChild(b);
+  });
+  document.getElementById("pillHint").textContent = I18N[lang].pillHint;
+}
+document.getElementById("pills").addEventListener("click", (e)=>{
+  const pill = e.target.closest(".pill");
+  if(!pill) return;
+  input.value = pill.dataset.ex || "";
+  input.focus();
+  autoResize();
+});
+
 function applyLang(next){
   lang = next;
   const t = I18N[lang];
@@ -851,7 +900,6 @@ function applyLang(next){
   document.getElementById("modeLabel").textContent = t.modeLabel;
   document.getElementById("levelHint").textContent = t.levelHint;
 
-  /* ✅ FIX: header always shows teacher name */
   mainTitle.textContent = t.mainTitle;
   mainSub.textContent   = t.mainSub;
 
@@ -862,6 +910,7 @@ function applyLang(next){
   btnAr.classList.toggle("active", lang==="ar");
   btnEn.classList.toggle("active", lang==="en");
 
+  renderPills();
   applyChips();
   savePrefs();
 }
@@ -869,60 +918,89 @@ function applyLang(next){
 btnAr.addEventListener("click", ()=>applyLang("ar"));
 btnEn.addEventListener("click", ()=>applyLang("en"));
 
-document.getElementById("pills").addEventListener("click", (e)=>{
-  const pill = e.target.closest(".pill");
-  if(!pill) return;
-  input.value = pill.dataset.ex || "";
-  input.focus();
-  autoResize();
-});
-
 clearBtn.addEventListener("click", ()=>{
   chat.innerHTML = "";
   localStorage.removeItem(STORAGE_KEY);
   addMsg("bot", I18N[lang].cleared, {forceScroll:true});
 });
 
-/* ✅ تعديل مهم: Prefix قوي + رياضيات فقط + لباقه + بدون LaTeX */
+/* =========================
+✅ Prefix مُصلّح:
+- لا يقول "متخصص فقط" لأسئلة مثل: معادلة تربيعية/تفاضلية/ODE/PDE
+- لا يستخدم رسالة الاعتذار إلا إذا كان السؤال واضح خارج الرياضيات
+========================= */
 function buildPrefix(){
   const onlyMsg = I18N[lang].onlyMath;
 
-  return (lang === "en")
-    ? `You are Ms. Asmaa, a mathematics-only tutor.
-Strict rules:
-- Answer ONLY math questions (algebra, calculus, geometry, statistics, ODE/PDE, etc.).
-- If the question is not math, reply with this exact sentence ONLY:
+  if(lang === "en"){
+    return `You are Ms. Asmaa, a polite mathematics tutor.
+CRITICAL:
+- Differential equations, ODE, PDE, calculus, quadratic equations, algebra, geometry, statistics are ALL mathematics.
+- DO NOT reply with the refusal message for any of these topics.
+- Only refuse if the message is clearly non-math (like politics, relationships, movies, etc.).
+Rules:
+- Reply in ENGLISH only.
+- Use standard readable math symbols: √, ², ³, ×, ÷, =, ≤, ≥.
+- No LaTeX. No code blocks.
+- If unclear: ask ONE short clarifying question, then solve with best assumption.
+If (and only if) the message is clearly not math, reply with this exact text ONLY:
 "${onlyMsg}"
-- If unclear: ask ONE clarifying question, then solve with best assumption.
-- Use plain text only (NO LaTeX). Use: 3/4, sqrt(2), x^2.
-`
-    : `أنتِ الأستاذة أسماء، معلمة متخصصة في الرياضيات فقط.
-قواعد صارمة:
-- أجيبي عن أسئلة الرياضيات فقط (جبر، تحليل، تفاضل وتكامل، هندسة، إحصاء، ODE/PDE...).
-- إذا كان السؤال غير رياضي، اكتبي هذه الجملة فقط دون أي إضافة:
-"${onlyMsg}"
+`;
+  }
+
+  return `أنتِ الأستاذة أسماء، معلمة رياضيات بأسلوب لبق وواضح.
+مهم جدًا:
+- المعادلات التفاضلية، ODE، PDE، التفاضل والتكامل، المعادلات التربيعية، الجبر، الهندسة، الإحصاء = كلها رياضيات.
+- لا تكتبي رسالة "أنا مختصة بالرياضيات فقط" لأي سؤال من هذه المجالات.
+- ارفضي فقط إذا كانت الرسالة واضحة أنها ليست رياضيات (سياسة، علاقات، أفلام...).
+قواعد:
+- أجيبي بالعربية فقط.
+- استخدمي رموزًا مفهومة: √ ، ² ، ³ ، × ، ÷ ، = ، ≤ ، ≥.
+- بدون LaTeX وبدون كتل كود.
 - إذا كان السؤال غير واضح: اسألي سؤالًا توضيحيًا واحدًا ثم حلي بأفضل افتراض.
-- استخدمي نصًا عاديًا فقط (بدون LaTeX). استعملي: 3/4 ، sqrt(2) ، x^2.
+إذا (وفقط إذا) كانت الرسالة ليست رياضيات بشكل واضح، اكتبي النص التالي فقط دون أي إضافة:
+"${onlyMsg}"
 `;
 }
 
-/* ✅ فلتر بسيط بعد استلام الإجابة: لو خرجت عن الرياضيات → اعتذار لبق */
-function answerLooksMath(text){
-  const t = (text || "").toLowerCase();
-
-  const mathSignals = /([0-9]|sqrt\(|\^|=|integral|derivative|limit|equation|matrix|vector|probability|geometry|algebra|calculus|sin|cos|tan|log|ln|∫|∑|π|نهاية|اشتق|تكامل|معادلة|متباينة|مصفوفة|متجه|احتمال|هندسة|جبر|تفاضل)/i;
-
-  const offTopicSignals = /(سياسة|دين|زواج|علاقة|كرة|فيلم|مسلسل|أغنية|طبخ|وصفة|سفر|bitcoin|football|movie|music|relationship|politics|religion|recipe|travel)/i;
-
-  if(offTopicSignals.test(t) && !mathSignals.test(t)) return false;
-  return mathSignals.test(t);
+/* =========================
+حفظ/تحميل المحادثة
+========================= */
+function saveChat(){
+  try{
+    const items = [];
+    chat.querySelectorAll(".row").forEach(row=>{
+      const role = row.classList.contains("me") ? "me" : "bot";
+      const bubble = row.querySelector(".bubble");
+      const text = bubble ? bubble.textContent : "";
+      items.push({ role, text });
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }catch{}
 }
-
+function loadChat(){
+  try{
+    const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if(!items || !Array.isArray(items) || items.length===0) return false;
+    chat.innerHTML = "";
+    items.forEach(it=> addMsg(it.role, it.text, {forceScroll:false}));
+    return true;
+  }catch{
+    return false;
+  }
+}
 async function send(){
   const q = input.value.trim();
   if(!q) return;
 
-  /* ✅ حذفنا منع الإرسال (لا نرفض أسئلة رياضية بالخطأ) */
+  // ✅ رفض شديد الصرامة فقط (لو واضح غير رياضيات)
+  if(isClearlyNonMath(q)){
+    addMsg("me", q, {forceScroll:true});
+    input.value = "";
+    autoResize();
+    addMsg("bot", I18N[lang].onlyMath, {forceScroll:true});
+    return;
+  }
 
   const level = levelSel.value;
   const mode  = modeSel.value;
@@ -938,10 +1016,16 @@ async function send(){
   try{
     const styleHint =
       (lang === "en")
-        ? `Student level: ${level}. Answer style: ${mode}.`
-        : `مستوى الطالب: ${level}. أسلوب الإجابة: ${mode}.`;
+        ? `Student level: ${LEVEL_LABELS[level]?.en || level}. Answer style: ${MODE_LABELS[mode]?.en || mode}.`
+        : `مستوى الطالب: ${LEVEL_LABELS[level]?.ar || level}. أسلوب الإجابة: ${MODE_LABELS[mode]?.ar || mode}.`;
 
-    const finalMessage = buildPrefix() + "\n" + styleHint + "\n\n" + q;
+    // ✅ نضيف سطر “تأكيد رياضياتي” يساعد النموذج يفهم حتى بدون رموز
+    const mathConfirm =
+      (lang === "en")
+        ? "This is a MATH question. Treat terms like 'quadratic', 'differential equation', ODE/PDE as math."
+        : "هذا سؤال رياضيات. اعتبر (معادلة تربيعية/معادلة تفاضلية/ODE/PDE) كلها رياضيات.";
+
+    const finalMessage = buildPrefix() + "\n" + mathConfirm + "\n" + styleHint + "\n\n" + q;
 
     const res = await fetch(WORKER_URL, {
       method: "POST",
@@ -960,16 +1044,16 @@ async function send(){
 
     hideTyping();
 
-    const ans = (data.answer || "").toString().trim();
-    const onlyMsg = I18N[lang].onlyMath;
+    const ansRaw = (data.answer || "").toString().trim();
+    let ans = prettifyMathText(ansRaw);
 
-    let finalAns = ans;
-
-    if(finalAns && finalAns !== onlyMsg && !answerLooksMath(finalAns)){
-      finalAns = onlyMsg;
+    // ✅ لا نفلتر إجابة الرياضيات بقسوة (حتى لا نكسر أسئلة التفاضل)
+    // فقط لو واضح جدًا غير رياضيات:
+    if(isClearlyNonMath(ans)){
+      ans = I18N[lang].onlyMath;
     }
 
-    addMsg("bot", finalAns || (lang==="ar" ? "لا يوجد رد واضح." : "No clear answer returned."), {forceScroll:true});
+    addMsg("bot", ans || I18N[lang].noAnswer, {forceScroll:true});
 
   }catch(e){
     hideTyping();
@@ -995,30 +1079,6 @@ function updateToTop(){
 chat.addEventListener("scroll", updateToTop, { passive:true });
 toTopBtn.addEventListener("click", ()=>{ scrollToTopHard(); });
 updateToTop();
-
-function saveChat(){
-  try{
-    const items = [];
-    chat.querySelectorAll(".row").forEach(row=>{
-      const role = row.classList.contains("me") ? "me" : "bot";
-      const bubble = row.querySelector(".bubble");
-      const text = bubble ? bubble.textContent : "";
-      items.push({ role, text });
-    });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }catch{}
-}
-function loadChat(){
-  try{
-    const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if(!items || !Array.isArray(items) || items.length===0) return false;
-    chat.innerHTML = "";
-    items.forEach(it=> addMsg(it.role, it.text, {forceScroll:false}));
-    return true;
-  }catch{
-    return false;
-  }
-}
 
 /* init */
 loadPrefs();

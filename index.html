@@ -476,7 +476,7 @@ body.ltr .toast{ right:auto; left:14px; }
           • أرسل تمرينًا واحدًا في كل مرة للحصول على شرح دقيق.
         </p>
         <div class="pills" id="pills">
-        
+
         </div>
       </div>
 
@@ -618,7 +618,8 @@ const I18N = {
     cleared: "تم مسح المحادثة. ابدأ تمرينًا جديدًا.",
     preparing: "الأستاذة أسماء تُحضّر الإجابة",
     busy: "جاري الإرسال...",
-    onlyMath: "هذه المنصة مخصصة للرياضيات فقط. اكتب سؤالًا رياضيًا من فضلك.",
+    /* ✅ تعديل الجملة لتكون لبقة */
+    onlyMath: "عذرًا، أنا مختصة بالرياضيات فقط ولا يمكنني الإجابة عن هذا النوع من الأسئلة. من فضلك اكتب سؤالًا في الرياضيات.",
     copied: "تم النسخ ✅",
     restored: "تم استرجاع المحادثة ✅"
   },
@@ -643,7 +644,8 @@ const I18N = {
     cleared: "Chat cleared. Start a new exercise.",
     preparing: "Ms. Asmaa is preparing the answer",
     busy: "Sending...",
-    onlyMath: "This assistant is for math only. Please ask a math question.",
+    /* ✅ تعديل الجملة لتكون لبقة */
+    onlyMath: "Sorry, I specialize in mathematics only and I can’t answer this type of question. Please ask a math question.",
     copied: "Copied ✅",
     restored: "Chat restored ✅"
   }
@@ -675,6 +677,7 @@ function showToast(msg){
   setTimeout(()=>toast.classList.remove("show"), 1200);
 }
 
+/* (موجود كما هو، لكن لم نعد نستخدمه لمنع الإرسال) */
 function looksMathy(text){
   const t = (text||"").toLowerCase();
   const hasMathSymbols = /[0-9x y z+\-*/^=()√π∞∫∑]/.test(text);
@@ -880,21 +883,46 @@ clearBtn.addEventListener("click", ()=>{
   addMsg("bot", I18N[lang].cleared, {forceScroll:true});
 });
 
+/* ✅ تعديل مهم: Prefix قوي + رياضيات فقط + لباقه + بدون LaTeX */
 function buildPrefix(){
-  // helps force response language even if Worker ignores the field
+  const onlyMsg = I18N[lang].onlyMath;
+
   return (lang === "en")
-    ? "Answer in English only. Math only. "
-    : "أجب بالعربية فقط. رياضيات فقط. ";
+    ? `You are Ms. Asmaa, a mathematics-only tutor.
+Strict rules:
+- Answer ONLY math questions (algebra, calculus, geometry, statistics, ODE/PDE, etc.).
+- If the question is not math, reply with this exact sentence ONLY:
+"${onlyMsg}"
+- If unclear: ask ONE clarifying question, then solve with best assumption.
+- Use plain text only (NO LaTeX). Use: 3/4, sqrt(2), x^2.
+`
+    : `أنتِ الأستاذة أسماء، معلمة متخصصة في الرياضيات فقط.
+قواعد صارمة:
+- أجيبي عن أسئلة الرياضيات فقط (جبر، تحليل، تفاضل وتكامل، هندسة، إحصاء، ODE/PDE...).
+- إذا كان السؤال غير رياضي، اكتبي هذه الجملة فقط دون أي إضافة:
+"${onlyMsg}"
+- إذا كان السؤال غير واضح: اسألي سؤالًا توضيحيًا واحدًا ثم حلي بأفضل افتراض.
+- استخدمي نصًا عاديًا فقط (بدون LaTeX). استعملي: 3/4 ، sqrt(2) ، x^2.
+`;
+}
+
+/* ✅ فلتر بسيط بعد استلام الإجابة: لو خرجت عن الرياضيات → اعتذار لبق */
+function answerLooksMath(text){
+  const t = (text || "").toLowerCase();
+
+  const mathSignals = /([0-9]|sqrt\(|\^|=|integral|derivative|limit|equation|matrix|vector|probability|geometry|algebra|calculus|sin|cos|tan|log|ln|∫|∑|π|نهاية|اشتق|تكامل|معادلة|متباينة|مصفوفة|متجه|احتمال|هندسة|جبر|تفاضل)/i;
+
+  const offTopicSignals = /(سياسة|دين|زواج|علاقة|كرة|فيلم|مسلسل|أغنية|طبخ|وصفة|سفر|bitcoin|football|movie|music|relationship|politics|religion|recipe|travel)/i;
+
+  if(offTopicSignals.test(t) && !mathSignals.test(t)) return false;
+  return mathSignals.test(t);
 }
 
 async function send(){
   const q = input.value.trim();
   if(!q) return;
 
-  if(!looksMathy(q)){
-    showToast(I18N[lang].onlyMath);
-    return;
-  }
+  /* ✅ حذفنا منع الإرسال (لا نرفض أسئلة رياضية بالخطأ) */
 
   const level = levelSel.value;
   const mode  = modeSel.value;
@@ -908,7 +936,12 @@ async function send(){
   showTyping();
 
   try{
-    const finalMessage = buildPrefix() + q;
+    const styleHint =
+      (lang === "en")
+        ? `Student level: ${level}. Answer style: ${mode}.`
+        : `مستوى الطالب: ${level}. أسلوب الإجابة: ${mode}.`;
+
+    const finalMessage = buildPrefix() + "\n" + styleHint + "\n\n" + q;
 
     const res = await fetch(WORKER_URL, {
       method: "POST",
@@ -926,8 +959,17 @@ async function send(){
     try{ data = JSON.parse(raw); } catch { data = { answer: raw }; }
 
     hideTyping();
+
     const ans = (data.answer || "").toString().trim();
-    addMsg("bot", ans || (lang==="ar" ? "لا يوجد رد واضح." : "No clear answer returned."), {forceScroll:true});
+    const onlyMsg = I18N[lang].onlyMath;
+
+    let finalAns = ans;
+
+    if(finalAns && finalAns !== onlyMsg && !answerLooksMath(finalAns)){
+      finalAns = onlyMsg;
+    }
+
+    addMsg("bot", finalAns || (lang==="ar" ? "لا يوجد رد واضح." : "No clear answer returned."), {forceScroll:true});
 
   }catch(e){
     hideTyping();

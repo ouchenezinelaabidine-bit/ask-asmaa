@@ -1,6 +1,4 @@
-<!-- =========================
-PART 1 / 2  (انسخ هذا أولاً)
-========================= -->
+
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -712,7 +710,7 @@ function hasMathSignals(text){
   return (digitAny.test(s) && sym.test(s)) || sym.test(s) || vars.test(s) || wordsAr.test(s) || wordsEn.test(s);
 }
 
-/* نستخدم رفضًا “شديد الصرامة” فقط: لازم يكون واضح غير رياضي  */
+/* نستخدم رفضًا “شديد الصرامة” فقط: لازم يكون واضح غير رياضي + بدون أي إشارة رياضيات */
 function isClearlyNonMath(text){
   const t = (text||"").toLowerCase();
   const offTopic = /(سياسة|دين|زواج|علاقة|حب|كرة|مباراة|فيلم|مسلسل|أغنية|طبخ|وصفة|سفر|وظيفة|راتب|bitcoin|football|movie|music|relationship|politics|religion|recipe|travel|iphone|canon|طابعة|واتساب|انستجرام|تيك توك|سناب)/i;
